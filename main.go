@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
+	"wiki/controllers"
 	"wiki/views"
 )
 
@@ -14,7 +15,6 @@ var (
 	postView       *views.View
 	controlView    *views.View
 	loginView      *views.View
-	signupView     *views.View
 )
 
 func index(w http.ResponseWriter, r *http.Request) {
@@ -47,11 +47,6 @@ func login(w http.ResponseWriter, r *http.Request) {
 	panicIfErr(loginView.Render(w, nil))
 }
 
-func signup(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html")
-	panicIfErr(signupView.Render(w, nil))
-}
-
 func notFound(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	w.WriteHeader(http.StatusNotFound)
@@ -65,7 +60,7 @@ func main() {
 	postView = views.NewView("bulma", "views/post.gohtml")
 	controlView = views.NewView("bulma", "views/control.gohtml")
 	loginView = views.NewView("bulma", "views/login.gohtml")
-	signupView = views.NewView("bulma", "views/signup.gohtml")
+	usersC := controllers.NewUsers()
 
 	r := mux.NewRouter()
 	r.NotFoundHandler = http.HandlerFunc(notFound)
@@ -75,7 +70,7 @@ func main() {
 	r.HandleFunc("/content/{category}/", topics)
 	r.HandleFunc("/user/{username}", control)
 	r.HandleFunc("/login", login)
-	r.HandleFunc("/signup", signup)
+	r.HandleFunc("/signup", usersC.New)
 	http.ListenAndServe(":3000", r)
 }
 
