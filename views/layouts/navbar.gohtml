@@ -1,0 +1,44 @@
+{{define "navbar"}}
+    <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
+        <div class="container">
+            <div class="navbar-brand">
+                <a class="navbar-item" href="/" style="font-size: 24px;">
+                    <span class="icon">
+                        <i class="fas fa-school"></i>
+                    </span>
+                    &nbsp;&nbsp;&nbsp;Web classroom</a>
+                <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false"
+                   data-target="navbarBasicExample">
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                </a>
+            </div>
+
+            <div id="navbarBasicExample" class="navbar-menu">
+                <div class="navbar-end">
+                    <div class="navbar-item">
+                        <div class="buttons">
+                            <a href="/login" class="button is-primary">
+                                <strong>Login</strong>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <nav class="breadcrumb has-bullet-separator" aria-label="breadcrumbs">
+        <div class="container is-fluid"
+             style="background-color:#e6fffa;padding:12px 16px;border-top:4px solid #4fd1c5;border-bottom:1px solid #d0d6dd;">
+            <div class="container">
+                <ul>
+                    <li><a href="/" style="color:#38b2ac;text-decoration: underline;">Home</a></li>
+                    <li><a href="#" style="color:#38b2ac;text-decoration: underline;">Backend</a></li>
+                    <li><a href="#" style="color:#38b2ac;text-decoration: underline;">Golang</a></li>
+                    <li class="is-active"><a href="#" aria-current="page">Web development with Go</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+{{end}}

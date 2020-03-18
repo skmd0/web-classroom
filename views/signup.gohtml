@@ -1,0 +1,50 @@
+{{define "yield"}}
+    <div class="columns">
+        <div class="column"></div>
+        <div class="column is-half">
+            <div class="panel" style="background-color: #fff;">
+                <p class="panel-heading" style="background-color: #444; color: #ffffff;">Signup</p>
+                <div class="panel-block" style="padding: 15px;">
+                    <form style="width:100%;">
+                        <p style="text-align: center;"><a href="/login">Already have an account? Login here.</a></p>
+                        <hr style="margin-top:1rem;">
+                        <div class="field">
+                            <label class="label">Name</label>
+                            <div class="control">
+                                <input class="input" type="text" placeholder="Text input">
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label class="label">Username</label>
+                            <div class="control has-icons-left has-icons-right">
+                                <input class="input is-success" type="text" placeholder="Text input" value="bulma">
+                                <span class="icon is-small is-left"> <i class="fas fa-user"></i> </span>
+                                <span class="icon is-small is-right"> <i class="fas fa-check"></i> </span>
+                            </div>
+                            <p class="help is-success">This username is available</p>
+                        </div>
+
+                        <div class="field">
+                            <label class="label">Email</label>
+                            <div class="control has-icons-left has-icons-right">
+                                <input class="input is-danger" type="email" placeholder="Email input" value="hello@">
+                                <span class="icon is-small is-left"> <i class="fas fa-envelope"></i> </span>
+                                <span class="icon is-small is-right"> <i
+                                            class="fas fa-exclamation-triangle"></i> </span>
+                            </div>
+                            <p class="help is-danger">This email is invalid</p>
+                        </div>
+
+                        <div class="field">
+                            <div class="control">
+                                <button class="button is-link is-fullwidth">Sign up</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="column"></div>
+    </div>
+{{end}}
