@@ -2,16 +2,25 @@
     <div class="columns">
         <div class="column"></div>
         <div class="column is-half">
-            <div class="panel" style="background-color: #fff;">
-                <p class="panel-heading" style="background-color: #444; color: #ffffff;">Signup</p>
-                <div class="panel-block" style="padding: 15px;">
-                    <form action="/signup" method="POST" style="width:100%;">
-                        <p style="text-align: center;"><a href="/login">Already have an account? Login here.</a></p>
-                        <hr style="margin-top:1rem;">
+            <div class="panel panel-login">
+                <p class="panel-heading panel-heading-login">Signup</p>
+                <div class="panel-block panel-block-login">
+                    <form action="/signup" method="POST" class="form-login">
+                        <p class="form-link-message"><a href="/login">Already have an account? Login here.</a></p>
+                        <hr class="form-divider">
+
+                        <div class="field">
+                            <label class="label">Name</label>
+                            <div class="control has-icons-left">
+                                <input class="input" type="text" name="name" placeholder="Your name"
+                                       value="">
+                                <span class="icon is-small is-left"> <i class="fas fa-user"></i> </span>
+                            </div>
+                        </div>
 
                         <div class="field">
                             <label class="label">Email</label>
-                            <div class="control has-icons-left has-icons-right">
+                            <div class="control has-icons-left">
                                 <input class="input" type="email" name="email" placeholder="Email input"
                                        value="hello@test.com">
                                 <span class="icon is-small is-left"> <i class="fas fa-envelope"></i> </span>
@@ -20,9 +29,18 @@
 
                         <div class="field">
                             <label class="label">Password</label>
-                            <div class="control has-icons-left has-icons-right">
+                            <div class="control has-icons-left">
                                 <input class="input" type="password" name="password" placeholder="Your password">
-                                <span class="icon is-small is-left"> <i class="fas fa-envelope"></i> </span>
+                                <span class="icon is-small is-left"> <i class="fas fa-key"></i> </span>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label class="label">Repeat password</label>
+                            <div class="control has-icons-left">
+                                <input class="input" type="password" name="repeat_password"
+                                       placeholder="Repeat password">
+                                <span class="icon is-small is-left"> <i class="fas fa-key"></i> </span>
                             </div>
                         </div>
 

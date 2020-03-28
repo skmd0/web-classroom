@@ -2,7 +2,9 @@ package controllers
 
 import (
 	"fmt"
+	"github.com/jinzhu/gorm"
 	"net/http"
+	"wiki/models"
 	"wiki/views"
 )
 
@@ -10,16 +12,18 @@ import (
 // This function will panic if the templates are not
 // parsed correctly, and should only be used during
 // initial setup.
-func NewUsers() *Users {
+func NewUsers(us *models.UserService) *Users {
 	return &Users{
 		LoginView: views.NewView("bulma", "users/login"),
 		NewView:   views.NewView("bulma", "users/new"),
+		us:        us,
 	}
 }
 
 type Users struct {
 	LoginView *views.View
 	NewView   *views.View
+	us        *models.UserService
 }
 
 // Login is used to render the login form where user can login.
@@ -42,9 +46,11 @@ func (u *Users) New(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-type SignupForm struct {
-	Email    string `schema:"email"`
-	Password string `schema:"password"`
+type SignUpForm struct {
+	Name           string `schema:"name"`
+	Email          string `schema:"email"`
+	Password       string `schema:"password"`
+	RepeatPassword string `schema:"repeat_password"`
 }
 
 // Create is used to process the signup form when a user
@@ -52,11 +58,28 @@ type SignupForm struct {
 //
 // POST /signup
 func (u *Users) Create(w http.ResponseWriter, r *http.Request) {
-	var form SignupForm
+	var form SignUpForm
 	if err := ParseForm(r, &form); err != nil {
 		panic(err)
 	}
 
-	fmt.Fprintln(w, "Email:", form.Email)
+	user := &models.User{
+		Model: gorm.Model{},
+		Name:  form.Name,
+		Email: form.Email,
+	}
+	err := u.us.Create(user)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	userDB, err := u.us.ByID(user.ID)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Fprintln(w, "Name:", userDB.Name)
+	fmt.Fprintln(w, "Email:", userDB.Email)
 	fmt.Fprintln(w, "Password:", form.Password)
 }
