@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"golang.org/x/crypto/bcrypt"
 )
 
 var (
@@ -54,6 +55,12 @@ func first(db *gorm.DB, dst interface{}) error {
 // Create will create the provided user and backfill data
 // like the ID, CreatedAt and UpdatedAt fields.
 func (us *UserService) Create(user *User) error {
+	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+	user.PasswordHash = string(hash)
+	user.Password = ""
 	return us.db.Create(user).Error
 }
 
