@@ -52,7 +52,7 @@ func first(db *gorm.DB, dst interface{}) error {
 	return err
 }
 
-// Create will create the provided user and backfill data
+// Create will create the provided user and fill in the data
 // like the ID, CreatedAt and UpdatedAt fields.
 func (us *UserService) Create(user *User) error {
 	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
