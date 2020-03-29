@@ -64,9 +64,10 @@ func (u *Users) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user := &models.User{
-		Model: gorm.Model{},
-		Name:  form.Name,
-		Email: form.Email,
+		Model:    gorm.Model{},
+		Name:     form.Name,
+		Email:    form.Email,
+		Password: form.Password,
 	}
 	err := u.us.Create(user)
 	if err != nil {
@@ -81,5 +82,5 @@ func (u *Users) Create(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprintln(w, "Name:", userDB.Name)
 	fmt.Fprintln(w, "Email:", userDB.Email)
-	fmt.Fprintln(w, "Password:", form.Password)
+	fmt.Fprintln(w, "Password:", userDB.PasswordHash)
 }
