@@ -36,7 +36,7 @@ func TestCreateUser(t *testing.T) {
 		Name:  "Michael Scott",
 		Email: "michael@test.com",
 	}
-	err = us.Create(&user)
+	_, err = us.Create(&user)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -60,7 +60,7 @@ func TestUpdateUser(t *testing.T) {
 		Name:  "Nemod Marg",
 		Email: "nemod@testupdateuser.com",
 	}
-	err = us.Create(&user)
+	_, err = us.Create(&user)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -96,7 +96,7 @@ func TestDeleteUser(t *testing.T) {
 		Name:  "Delete",
 		Email: "delete@delete.com",
 	}
-	err = us.Create(&userData)
+	_, err = us.Create(&userData)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -133,7 +133,7 @@ func TestByEmail(t *testing.T) {
 		Name:  "ByEmail",
 		Email: "byemail@byemail.com",
 	}
-	err = us.Create(&userData)
+	_, err = us.Create(&userData)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -164,7 +164,7 @@ func TestByID(t *testing.T) {
 		Name:  "ByID",
 		Email: "byid@byid.com",
 	}
-	err = us.Create(&userData)
+	_, err = us.Create(&userData)
 	if err != nil {
 		t.Fatal(err)
 	}

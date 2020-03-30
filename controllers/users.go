@@ -97,7 +97,8 @@ func (u *Users) Create(w http.ResponseWriter, r *http.Request) {
 		Email:    form.Email,
 		Password: form.Password,
 	}
-	err := u.us.Create(user)
+
+	_, err := u.us.Create(user)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

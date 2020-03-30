@@ -18,7 +18,7 @@ var (
 	ErrInvalidPassword = errors.New("models: provided password is invalid")
 )
 
-const userPwPepper = "my-secret-pepper-string123!"
+const UserPwPepper = "my-secret-pepper-string123!"
 
 func NewUserService(connectionInfo string) (*UserService, error) {
 	db, err := gorm.Open("postgres", connectionInfo)
@@ -55,7 +55,7 @@ func (us *UserService) Authenticate(email, password string) (*User, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = bcrypt.CompareHashAndPassword([]byte(foundUser.PasswordHash), []byte(password+userPwPepper))
+	err = bcrypt.CompareHashAndPassword([]byte(foundUser.PasswordHash), []byte(password+UserPwPepper))
 	switch err {
 	case nil:
 		return foundUser, nil
@@ -77,15 +77,15 @@ func first(db *gorm.DB, dst interface{}) error {
 
 // Create will create the provided user and fill in the data
 // like the ID, CreatedAt and UpdatedAt fields.
-func (us *UserService) Create(user *User) error {
-	pwBytes := []byte(user.Password + userPwPepper)
+func (us *UserService) Create(user *User) (string, error) {
+	pwBytes := []byte(user.Password + UserPwPepper)
 	hash, err := bcrypt.GenerateFromPassword(pwBytes, bcrypt.DefaultCost)
 	if err != nil {
-		return err
+		return "", err
 	}
 	user.PasswordHash = string(hash)
 	user.Password = ""
-	return us.db.Create(user).Error
+	return user.PasswordHash, us.db.Create(user).Error
 }
 
 // Update will update the provided user with all of the date
