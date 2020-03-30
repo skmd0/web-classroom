@@ -51,16 +51,38 @@ func (u *Users) LoginUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user, err := u.us.Authenticate(form.Email, form.Password)
-	switch err {
-	case models.ErrInvalidPassword:
-		http.Error(w, "Invalid password.", http.StatusForbidden)
-	case models.ErrNotFound:
-		http.Error(w, "Invalid email address.", http.StatusForbidden)
-	case nil:
-		fmt.Fprintln(w, user)
-	default:
-		http.Error(w, "Oops something went wrong.", http.StatusInternalServerError)
+	if err != nil {
+		switch err {
+		case models.ErrInvalidPassword:
+			http.Error(w, "Invalid password.", http.StatusForbidden)
+		case models.ErrNotFound:
+			http.Error(w, "Invalid email address.", http.StatusForbidden)
+		default:
+			http.Error(w, "Oops something went wrong.", http.StatusInternalServerError)
+		}
+		return
 	}
+	signIn(w, user)
+	http.Redirect(w, r, "/cookie", http.StatusFound)
+}
+
+func signIn(w http.ResponseWriter, user *models.User) {
+	cookie := http.Cookie{
+		Name:  "email",
+		Value: user.Email,
+	}
+	http.SetCookie(w, &cookie)
+}
+
+// CookieTest is used to display cookies set on the current user
+func (u *Users) CookieTest(w http.ResponseWriter, r *http.Request) {
+	cookie, err := r.Cookie("email")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	fmt.Fprintln(w, "Email is:", cookie.Value)
+	fmt.Fprintln(w, "Cookie:", cookie)
 }
 
 // New is used to render the form where a user can
@@ -103,13 +125,6 @@ func (u *Users) Create(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	userDB, err := u.us.ByID(user.ID)
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Fprintln(w, "Name:", userDB.Name)
-	fmt.Fprintln(w, "Email:", userDB.Email)
-	fmt.Fprintln(w, "Password:", userDB.PasswordHash)
+	signIn(w, user)
+	http.Redirect(w, r, "/cookie", http.StatusFound)
 }
