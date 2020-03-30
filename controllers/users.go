@@ -45,14 +45,22 @@ type LoginForm struct {
 //
 // POST /login
 func (u *Users) LoginUser(w http.ResponseWriter, r *http.Request) {
-	form := LoginForm{
-		Email:    "",
-		Password: "",
-	}
+	form := LoginForm{}
 	if err := ParseForm(r, &form); err != nil {
 		panic(err)
 	}
-	fmt.Fprintln(w, form)
+
+	user, err := u.us.Authenticate(form.Email, form.Password)
+	switch err {
+	case models.ErrInvalidPassword:
+		http.Error(w, "Invalid password.", http.StatusForbidden)
+	case models.ErrNotFound:
+		http.Error(w, "Invalid email address.", http.StatusForbidden)
+	case nil:
+		fmt.Fprintln(w, user)
+	default:
+		http.Error(w, "Oops something went wrong.", http.StatusInternalServerError)
+	}
 }
 
 // New is used to render the form where a user can
