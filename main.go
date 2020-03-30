@@ -40,6 +40,7 @@ func main() {
 	r.Handle("/content/{category}/", staticC.Post).Methods("GET")
 	r.Handle("/user/{username}", staticC.Control).Methods("GET")
 	r.HandleFunc("/login", usersC.Login).Methods("GET")
+	r.HandleFunc("/login", usersC.LoginUser).Methods("POST")
 	r.HandleFunc("/signup", usersC.New).Methods("GET")
 	r.HandleFunc("/signup", usersC.Create).Methods("POST")
 

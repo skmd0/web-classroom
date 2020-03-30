@@ -35,6 +35,26 @@ func (u *Users) Login(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+type LoginForm struct {
+	Email    string `schema:"email"`
+	Password string `schema:"password"`
+}
+
+// LoginUser is used to verify the provided email address and password
+// and then log the user in if the credentials are correct.
+//
+// POST /login
+func (u *Users) LoginUser(w http.ResponseWriter, r *http.Request) {
+	form := LoginForm{
+		Email:    "",
+		Password: "",
+	}
+	if err := ParseForm(r, &form); err != nil {
+		panic(err)
+	}
+	fmt.Fprintln(w, form)
+}
+
 // New is used to render the form where a user can
 // create a new user account
 //
