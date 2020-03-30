@@ -202,3 +202,44 @@ func TestByID(t *testing.T) {
 		t.Fatalf("ByID() = %v, want %v", got, want)
 	}
 }
+
+func TestUserService_Authenticate(t *testing.T) {
+	us, err := testingUserService()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// create new test user
+	userPassword := "testtest"
+	userData := User{
+		Model:    gorm.Model{},
+		Name:     "TestAuthenticate",
+		Email:    "authenticate@authenticate.com",
+		Password: userPassword,
+	}
+	pwHash, err := us.Create(&userData)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// authenticate with correct credentials
+	user, err := us.Authenticate(userData.Email, userPassword)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if user.PasswordHash != pwHash {
+		t.Fatalf("Authenticate(): passwordHash %s; want %s", user.PasswordHash, pwHash)
+	}
+
+	// authenticate with incorrect email
+	_, err = us.Authenticate("random@email.com", userPassword)
+	if err != ErrNotFound {
+		t.Fatalf("Authenticate() err = '%v'; want '%v'", err, ErrNotFound)
+	}
+
+	// authenticate with incorrect password
+	_, err = us.Authenticate(userData.Email, "123123")
+	if err != ErrInvalidPassword {
+		t.Fatalf("Authenticate() err = '%v'; want '%v'", err, ErrInvalidPassword)
+	}
+}
