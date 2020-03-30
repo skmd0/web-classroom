@@ -29,6 +29,23 @@ func testingUserService() (*UserService, error) {
 	return us, nil
 }
 
+func TestNewUserService(t *testing.T) {
+	// test wrong connectionInfo string
+	_, gotErr := NewUserService("")
+	if gotErr == nil {
+		t.Fatalf("NewUserService() = nil; want error")
+	}
+
+	// test correct connectionInfo string
+	us, err := NewUserService(getPostgresLoginString())
+	if err != nil {
+		t.Fatalf("NewUserService() = '%v'; want nil error", err)
+	}
+	if us == nil {
+		t.Fatalf("NewUserService() = nil; want non-nil UserService")
+	}
+}
+
 func TestCreateUser(t *testing.T) {
 	us, err := testingUserService()
 	if err != nil {
