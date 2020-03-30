@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func testingUserService() (*UserService, error) {
+func getPostgresLoginString() string {
 	const (
 		host     = "localhost"
 		port     = 5432
@@ -15,9 +15,12 @@ func testingUserService() (*UserService, error) {
 		password = "future"
 		dbname   = "wiki_test"
 	)
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user,
+	return fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user,
 		password, dbname)
-	us, err := NewUserService(psqlInfo)
+}
+
+func testingUserService() (*UserService, error) {
+	us, err := NewUserService(getPostgresLoginString())
 	if err != nil {
 		return nil, err
 	}
