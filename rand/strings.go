@@ -5,6 +5,8 @@ import (
 	"encoding/base64"
 )
 
+const RememberTokenBytes = 32
+
 // Bytes generates n random bytes
 func Bytes(n int) ([]byte, error) {
 	b := make([]byte, n)
@@ -24,4 +26,10 @@ func String(nBytes int) (string, error) {
 		return "", err
 	}
 	return base64.URLEncoding.EncodeToString(b), nil
+}
+
+// RememberToken is a helper function for
+// generating a remember token for cookies
+func RememberToken() (string, error) {
+	return String(RememberTokenBytes)
 }
