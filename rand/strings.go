@@ -1,6 +1,9 @@
 package rand
 
-import "crypto/rand"
+import (
+	"crypto/rand"
+	"encoding/base64"
+)
 
 // Bytes generates n random bytes
 func Bytes(n int) ([]byte, error) {
@@ -10,4 +13,15 @@ func Bytes(n int) ([]byte, error) {
 		return nil, err
 	}
 	return b, nil
+}
+
+// String generates a byte slice of size nBytes
+// and returns a base64 encoded string version
+// of that byte slice
+func String(nBytes int) (string, error) {
+	b, err := Bytes(nBytes)
+	if err != nil {
+		return "", err
+	}
+	return base64.URLEncoding.EncodeToString(b), nil
 }
