@@ -107,11 +107,11 @@ func first(db *gorm.DB, dst interface{}) error {
 // like the ID, CreatedAt and UpdatedAt fields.
 func (us *UserService) Create(user *User) (string, error) {
 	pwBytes := []byte(user.Password + UserPwPepper)
-	hash, err := bcrypt.GenerateFromPassword(pwBytes, bcrypt.DefaultCost)
+	hashedPassword, err := bcrypt.GenerateFromPassword(pwBytes, bcrypt.DefaultCost)
 	if err != nil {
 		return "", err
 	}
-	user.PasswordHash = string(hash)
+	user.PasswordHash = string(hashedPassword)
 	user.Password = ""
 	if user.Remember == "" {
 		token, err := rand.RememberToken()
