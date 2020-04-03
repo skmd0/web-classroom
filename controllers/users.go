@@ -85,8 +85,9 @@ func (u *Users) signIn(w http.ResponseWriter, user *models.User) error {
 	}
 
 	cookie := http.Cookie{
-		Name:  "email",
-		Value: user.Email,
+		Name:     "remember_token",
+		Value:    user.Remember,
+		HttpOnly: true,
 	}
 	http.SetCookie(w, &cookie)
 	return nil
