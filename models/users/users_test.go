@@ -1,4 +1,4 @@
-package models
+package users
 
 import (
 	"fmt"
@@ -19,12 +19,12 @@ func getPostgresLoginString() string {
 		password, dbname)
 }
 
-func testingUserService() (*UserService, error) {
+func testingUserService() (UserService, error) {
 	us, err := NewUserService(getPostgresLoginString())
 	if err != nil {
 		return nil, err
 	}
-	us.db.LogMode(false)
+	//us.db.LogMode(false)
 	us.DestructiveReset()
 	return us, nil
 }

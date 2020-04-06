@@ -1,23 +1,11 @@
-package models
+package users
 
 import (
 	"errors"
 	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"golang.org/x/crypto/bcrypt"
 	"wiki/hash"
 	"wiki/rand"
-)
-
-var (
-	// ErrNotFound is returned when a resource cannot be found in the database.
-	ErrNotFound = errors.New("models: resource not found")
-
-	// ErrInvalidID is returned when an invalid ID is provided to a method like Delete()
-	ErrInvalidID = errors.New("models: ID provided was invalid")
-
-	// ErrInvalidPassword is returned when an invalid password is provided
-	ErrInvalidPassword = errors.New("models: provided password is invalid")
 )
 
 const (
@@ -25,6 +13,23 @@ const (
 	hmacSecretKey = "my-secret-hmac-key"
 )
 
+var (
+	// ErrNotFound is returned when a resource cannot be found in the database.
+	ErrNotFound = errors.New("models: resource not found")
+)
+
+// User is representation of the user DB table
+type User struct {
+	gorm.Model
+	Name         string
+	Email        string `gorm:"not null; unique_index"`
+	Password     string `gorm:"-"`
+	PasswordHash string `gorm:"not null"`
+	Remember     string `gorm:"-"`
+	RememberHash string `gorm:"not null;unique_index"`
+}
+
+// UserDB defines the CRUD methods for the user table
 type UserDB interface {
 	ByID(id uint) (*User, error)
 	ByEmail(email string) (*User, error)
@@ -40,41 +45,14 @@ type UserDB interface {
 	DestructiveReset() error
 }
 
-// UserService is a set of methods used to work with the user model
-type UserService interface {
-	// Authenticate will verify the provided email address and password
-	// are correct.
-	Authenticate(email, password string) (*User, error)
-
-	// UserDB is embedded interface with DB methods
-	UserDB
+// userGorm is the implementation of the UserDB interface
+type userGorm struct {
+	db   *gorm.DB
+	hmac hash.HMAC
 }
 
-func NewUserService(connectionInfo string) (UserService, error) {
-	ug, err := newUserGorm(connectionInfo)
-	if err != nil {
-		return nil, err
-	}
-	return &userService{
-		UserDB: &userValidator{
-			UserDB: ug,
-		},
-	}, nil
-}
-
-// to make sure userValidator implements everything from UserDB interface
-var _ UserService = &userService{}
-
-type userService struct {
-	UserDB
-}
-
-// to make sure userValidator implements everything from UserDB interface
-var _ UserDB = &userValidator{}
-
-type userValidator struct {
-	UserDB
-}
+// to make sure userGorm implements everything from UserDB interface
+var _ UserDB = &userGorm{}
 
 func newUserGorm(connectionInfo string) (*userGorm, error) {
 	db, err := gorm.Open("postgres", connectionInfo)
@@ -86,14 +64,6 @@ func newUserGorm(connectionInfo string) (*userGorm, error) {
 		db:   db,
 		hmac: hmac,
 	}, nil
-}
-
-// to make sure userGorm implements everything from UserDB interface
-var _ UserDB = &userGorm{}
-
-type userGorm struct {
-	db   *gorm.DB
-	hmac hash.HMAC
 }
 
 // ByID looks up the user by the provided ID.
@@ -131,33 +101,6 @@ func (ug *userGorm) ByRemember(token string) (*User, error) {
 	return &user, err
 }
 
-// Authenticate is used to authenticate a user with the provided
-// email address and password.
-func (us *userService) Authenticate(email, password string) (*User, error) {
-	foundUser, err := us.ByEmail(email)
-	if err != nil {
-		return nil, err
-	}
-	err = bcrypt.CompareHashAndPassword([]byte(foundUser.PasswordHash), []byte(password+UserPwPepper))
-	switch err {
-	case nil:
-		return foundUser, nil
-	case bcrypt.ErrMismatchedHashAndPassword:
-		return nil, ErrInvalidPassword
-	default:
-		return nil, err
-	}
-}
-
-// first executes a query from gorm.DB and writes data to dst by reference.
-func first(db *gorm.DB, dst interface{}) error {
-	err := db.First(dst).Error
-	if err == gorm.ErrRecordNotFound {
-		return ErrNotFound
-	}
-	return err
-}
-
 // Create will create the provided user and fill in the data
 // like the ID, CreatedAt and UpdatedAt fields.
 func (ug *userGorm) Create(user *User) (string, error) {
@@ -192,9 +135,6 @@ func (ug *userGorm) Update(user *User) error {
 
 // Delete will delete the user with provided ID
 func (ug *userGorm) Delete(id uint) error {
-	if id == 0 {
-		return ErrInvalidID
-	}
 	user := User{Model: gorm.Model{ID: id}}
 	return ug.db.Delete(&user).Error
 }
@@ -220,12 +160,11 @@ func (ug *userGorm) AutoMigrate() error {
 	return nil
 }
 
-type User struct {
-	gorm.Model
-	Name         string
-	Email        string `gorm:"not null; unique_index"`
-	Password     string `gorm:"-"`
-	PasswordHash string `gorm:"not null"`
-	Remember     string `gorm:"-"`
-	RememberHash string `gorm:"not null;unique_index"`
+// first executes a query from gorm.DB and writes data to dst by reference.
+func first(db *gorm.DB, dst interface{}) error {
+	err := db.First(dst).Error
+	if err == gorm.ErrRecordNotFound {
+		return ErrNotFound
+	}
+	return err
 }

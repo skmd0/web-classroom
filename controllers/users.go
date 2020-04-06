@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/jinzhu/gorm"
 	"net/http"
-	"wiki/models"
+	"wiki/models/users"
 	"wiki/rand"
 	"wiki/views"
 )
@@ -13,7 +13,7 @@ import (
 // This function will panic if the templates are not
 // parsed correctly, and should only be used during
 // initial setup.
-func NewUsers(us models.UserService) *Users {
+func NewUsers(us users.UserService) *Users {
 	return &Users{
 		LoginView: views.NewView("bulma", "users/login"),
 		NewView:   views.NewView("bulma", "users/new"),
@@ -24,7 +24,7 @@ func NewUsers(us models.UserService) *Users {
 type Users struct {
 	LoginView *views.View
 	NewView   *views.View
-	us        models.UserService
+	us        users.UserService
 }
 
 // Login is used to render the login form where user can login.
@@ -54,9 +54,9 @@ func (u *Users) LoginUser(w http.ResponseWriter, r *http.Request) {
 	user, err := u.us.Authenticate(form.Email, form.Password)
 	if err != nil {
 		switch err {
-		case models.ErrInvalidPassword:
+		case users.ErrInvalidPassword:
 			http.Error(w, "Invalid password.", http.StatusForbidden)
-		case models.ErrNotFound:
+		case users.ErrNotFound:
 			http.Error(w, "Invalid email address.", http.StatusForbidden)
 		default:
 			http.Error(w, "Oops something went wrong.", http.StatusInternalServerError)
@@ -71,7 +71,7 @@ func (u *Users) LoginUser(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/cookie", http.StatusFound)
 }
 
-func (u *Users) signIn(w http.ResponseWriter, user *models.User) error {
+func (u *Users) signIn(w http.ResponseWriter, user *users.User) error {
 	if user.Remember == "" {
 		token, err := rand.RememberToken()
 		if err != nil {
@@ -136,7 +136,7 @@ func (u *Users) Create(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	user := &models.User{
+	user := &users.User{
 		Model:    gorm.Model{},
 		Name:     form.Name,
 		Email:    form.Email,

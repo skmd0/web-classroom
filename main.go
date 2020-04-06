@@ -5,7 +5,7 @@ import (
 	"github.com/gorilla/mux"
 	"net/http"
 	"wiki/controllers"
-	"wiki/models"
+	"wiki/models/users"
 
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
@@ -21,7 +21,7 @@ const (
 func main() {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user,
 		password, dbname)
-	us, err := models.NewUserService(psqlInfo)
+	us, err := users.NewUserService(psqlInfo)
 	if err != nil {
 		panic(err)
 	}
