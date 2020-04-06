@@ -13,7 +13,7 @@ import (
 // This function will panic if the templates are not
 // parsed correctly, and should only be used during
 // initial setup.
-func NewUsers(us *models.UserService) *Users {
+func NewUsers(us models.UserService) *Users {
 	return &Users{
 		LoginView: views.NewView("bulma", "users/login"),
 		NewView:   views.NewView("bulma", "users/new"),
@@ -24,7 +24,7 @@ func NewUsers(us *models.UserService) *Users {
 type Users struct {
 	LoginView *views.View
 	NewView   *views.View
-	us        *models.UserService
+	us        models.UserService
 }
 
 // Login is used to render the login form where user can login.

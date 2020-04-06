@@ -40,21 +40,37 @@ type UserDB interface {
 	DestructiveReset() error
 }
 
-func NewUserService(connectionInfo string) (*UserService, error) {
+// UserService is a set of methods used to work with the user model
+type UserService interface {
+	// Authenticate will verify the provided email address and password
+	// are correct.
+	Authenticate(email, password string) (*User, error)
+
+	// UserDB is embedded interface with DB methods
+	UserDB
+}
+
+func NewUserService(connectionInfo string) (UserService, error) {
 	ug, err := newUserGorm(connectionInfo)
 	if err != nil {
 		return nil, err
 	}
-	return &UserService{
+	return &userService{
 		UserDB: &userValidator{
 			UserDB: ug,
 		},
 	}, nil
 }
 
-type UserService struct {
+// to make sure userValidator implements everything from UserDB interface
+var _ UserService = &userService{}
+
+type userService struct {
 	UserDB
 }
+
+// to make sure userValidator implements everything from UserDB interface
+var _ UserDB = &userValidator{}
 
 type userValidator struct {
 	UserDB
@@ -117,7 +133,7 @@ func (ug *userGorm) ByRemember(token string) (*User, error) {
 
 // Authenticate is used to authenticate a user with the provided
 // email address and password.
-func (us *UserService) Authenticate(email, password string) (*User, error) {
+func (us *userService) Authenticate(email, password string) (*User, error) {
 	foundUser, err := us.ByEmail(email)
 	if err != nil {
 		return nil, err
