@@ -3,14 +3,6 @@ package users
 import (
 	"errors"
 	"github.com/jinzhu/gorm"
-	"golang.org/x/crypto/bcrypt"
-	"wiki/hash"
-	"wiki/rand"
-)
-
-const (
-	UserPwPepper  = "my-secret-pepper-string123!"
-	hmacSecretKey = "my-secret-hmac-key"
 )
 
 var (
@@ -47,8 +39,7 @@ type UserDB interface {
 
 // userGorm is the implementation of the UserDB interface
 type userGorm struct {
-	db   *gorm.DB
-	hmac hash.HMAC
+	db *gorm.DB
 }
 
 // to make sure userGorm implements everything from UserDB interface
@@ -59,11 +50,7 @@ func newUserGorm(connectionInfo string) (*userGorm, error) {
 	if err != nil {
 		return nil, err
 	}
-	hmac := hash.NewHMAC(hmacSecretKey)
-	return &userGorm{
-		db:   db,
-		hmac: hmac,
-	}, nil
+	return &userGorm{db: db}, nil
 }
 
 // ByID looks up the user by the provided ID.
@@ -89,11 +76,9 @@ func (ug *userGorm) ByEmail(email string) (*User, error) {
 }
 
 // ByRemember looks up a user by remember token and returns the user.
-// This method also handles the hashing of the token.
-func (ug *userGorm) ByRemember(token string) (*User, error) {
+func (ug *userGorm) ByRemember(rememberHash string) (*User, error) {
 	var user User
-	hashedToken := ug.hmac.Hash(token)
-	db := ug.db.Where("remember_hash = ?", hashedToken)
+	db := ug.db.Where("remember_hash = ?", rememberHash)
 	err := first(db, &user)
 	if err != nil {
 		return nil, err
@@ -104,32 +89,12 @@ func (ug *userGorm) ByRemember(token string) (*User, error) {
 // Create will create the provided user and fill in the data
 // like the ID, CreatedAt and UpdatedAt fields.
 func (ug *userGorm) Create(user *User) (string, error) {
-	pwBytes := []byte(user.Password + UserPwPepper)
-	hashedPassword, err := bcrypt.GenerateFromPassword(pwBytes, bcrypt.DefaultCost)
-	if err != nil {
-		return "", err
-	}
-	user.PasswordHash = string(hashedPassword)
-	user.Password = ""
-	if user.Remember == "" {
-		token, err := rand.RememberToken()
-		if err != nil {
-			return "", err
-		}
-		user.Remember = token
-	}
-	if user.Remember != "" {
-		user.RememberHash = ug.hmac.Hash(user.Remember)
-	}
 	return user.PasswordHash, ug.db.Create(user).Error
 }
 
 // Update will update the provided user with all of the date
 // in the provided user object.
 func (ug *userGorm) Update(user *User) error {
-	if user.Remember != "" {
-		user.RememberHash = ug.hmac.Hash(user.Remember)
-	}
 	return ug.db.Save(user).Error
 }
 

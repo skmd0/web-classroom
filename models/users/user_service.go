@@ -3,12 +3,15 @@ package users
 import (
 	"errors"
 	"golang.org/x/crypto/bcrypt"
+	"wiki/hash"
+)
+
+const (
+	UserPwPepper  = "my-secret-pepper-string123!"
+	hmacSecretKey = "my-secret-hmac-key"
 )
 
 var (
-	// ErrInvalidID is returned when an invalid ID is provided to a method like Delete()
-	ErrInvalidID = errors.New("models: ID provided was invalid")
-
 	// ErrInvalidPassword is returned when an invalid password is provided
 	ErrInvalidPassword = errors.New("models: provided password is invalid")
 )
@@ -35,11 +38,12 @@ func NewUserService(connectionInfo string) (UserService, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &userService{
-		UserDB: &userValidator{
-			UserDB: ug,
-		},
-	}, nil
+	hmac := hash.NewHMAC(hmacSecretKey)
+	uv := &userValidator{
+		hmac:   hmac,
+		UserDB: ug,
+	}
+	return &userService{uv}, nil
 }
 
 // Authenticate is used to authenticate a user with the provided
