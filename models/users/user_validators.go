@@ -4,6 +4,7 @@ import (
 	"errors"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"golang.org/x/crypto/bcrypt"
+	"strings"
 	"wiki/hash"
 	"wiki/rand"
 )
@@ -32,6 +33,15 @@ type userValidator struct {
 // to make sure userValidator implements everything from UserDB interface
 var _ UserDB = &userValidator{}
 
+// ByEmail will normalize the email address before calling ByEmail on the userDB
+func (uv *userValidator) ByEmail(email string) (*User, error) {
+	user := User{Email: email}
+	if err := runUserValFunc(&user, uv.normalizeEmail); err != nil {
+		return nil, err
+	}
+	return uv.UserDB.ByEmail(user.Email)
+}
+
 // ByRemember will hash the remember token and then call ByRemember on the UserDB layer
 func (uv *userValidator) ByRemember(token string) (*User, error) {
 	user := User{Remember: token}
@@ -44,7 +54,11 @@ func (uv *userValidator) ByRemember(token string) (*User, error) {
 // Create will create the provided user and fill in the data
 // like the ID, CreatedAt and UpdatedAt fields.
 func (uv *userValidator) Create(user *User) (string, error) {
-	err := runUserValFunc(user, uv.bcryptPassword, uv.setRememberIfUnset, uv.hmacRemember)
+	err := runUserValFunc(user,
+		uv.bcryptPassword,
+		uv.setRememberIfUnset,
+		uv.hmacRemember,
+		uv.normalizeEmail)
 	if err != nil {
 		return "", err
 	}
@@ -54,7 +68,10 @@ func (uv *userValidator) Create(user *User) (string, error) {
 // Update will hash the remember token if it is provided
 // and call the Update method on the UserDB layer
 func (uv *userValidator) Update(user *User) error {
-	err := runUserValFunc(user, uv.bcryptPassword, uv.hmacRemember)
+	err := runUserValFunc(user,
+		uv.normalizeEmail,
+		uv.bcryptPassword,
+		uv.hmacRemember)
 	if err != nil {
 		return err
 	}
@@ -111,5 +128,10 @@ func (uv *userValidator) idGreaterThanZero(user *User) error {
 	if user.ID == 0 {
 		return ErrInvalidID
 	}
+	return nil
+}
+
+func (uv *userValidator) normalizeEmail(user *User) error {
+	user.Email = strings.TrimSpace(strings.ToLower(user.Email))
 	return nil
 }
