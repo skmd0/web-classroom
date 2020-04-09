@@ -85,6 +85,7 @@ func (uv *userValidator) Create(user *User) (string, error) {
 		uv.passwordRequired,
 		uv.passwordLength,
 		uv.bcryptPassword,
+		uv.passwordHashRequired,
 		uv.setRememberIfUnset,
 		uv.hmacRemember,
 		uv.normalizeEmail,
@@ -105,6 +106,7 @@ func (uv *userValidator) Update(user *User) error {
 		uv.passwordLength,
 		uv.normalizeEmail,
 		uv.bcryptPassword,
+		uv.passwordHashRequired,
 		uv.hmacRemember,
 		uv.requireEmail,
 		uv.emailFormat,
@@ -215,6 +217,13 @@ func (uv *userValidator) passwordLength(user *User) error {
 
 func (uv *userValidator) passwordRequired(user *User) error {
 	if user.Password == "" {
+		return ErrPasswordRequired
+	}
+	return nil
+}
+
+func (uv *userValidator) passwordHashRequired(user *User) error {
+	if user.PasswordHash == "" {
 		return ErrPasswordRequired
 	}
 	return nil
