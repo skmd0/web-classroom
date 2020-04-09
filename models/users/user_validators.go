@@ -22,6 +22,12 @@ var (
 
 	// ErrEmailTaken is return when update or create is attempted with an email already in use
 	ErrEmailTaken = errors.New("models: email address already taken")
+
+	// ErrPasswordTooShort is returned when password is shorter than 8 characters
+	ErrPasswordTooShort = errors.New("models: password must be at least 8 characters long")
+
+	// ErrPasswordRequired is returned when Update() or Create() is called with no password
+	ErrPasswordRequired = errors.New("models: password is required")
 )
 
 // validator function type signature
@@ -82,7 +88,9 @@ func (uv *userValidator) Create(user *User) (string, error) {
 		uv.normalizeEmail,
 		uv.requireEmail,
 		uv.emailFormat,
-		uv.emailIsAvail)
+		uv.emailIsAvail,
+		uv.passwordRequired,
+		uv.passwordLength)
 	if err != nil {
 		return "", err
 	}
@@ -98,7 +106,9 @@ func (uv *userValidator) Update(user *User) error {
 		uv.hmacRemember,
 		uv.requireEmail,
 		uv.emailFormat,
-		uv.emailIsAvail)
+		uv.emailIsAvail,
+		uv.passwordRequired,
+		uv.passwordLength)
 	if err != nil {
 		return err
 	}
@@ -190,6 +200,22 @@ func (uv *userValidator) emailIsAvail(user *User) error {
 	// user with email address found
 	if user.ID != existing.ID {
 		return ErrEmailTaken
+	}
+	return nil
+}
+
+func (uv *userValidator) passwordLength(user *User) error {
+	if user.Password == "" {
+		return nil
+	} else if len(user.Password) < 8 {
+		return ErrPasswordTooShort
+	}
+	return nil
+}
+
+func (uv *userValidator) passwordRequired(user *User) error {
+	if user.Password == "" {
+		return ErrPasswordRequired
 	}
 	return nil
 }
