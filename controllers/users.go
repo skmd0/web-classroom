@@ -54,7 +54,7 @@ func (u *Users) LoginUser(w http.ResponseWriter, r *http.Request) {
 	user, err := u.us.Authenticate(form.Email, form.Password)
 	if err != nil {
 		switch err {
-		case users.ErrInvalidPassword:
+		case users.ErrPasswordInvalid:
 			http.Error(w, "Invalid password.", http.StatusForbidden)
 		case users.ErrNotFound:
 			http.Error(w, "Invalid email address.", http.StatusForbidden)

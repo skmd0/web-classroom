@@ -11,8 +11,8 @@ import (
 )
 
 var (
-	// ErrInvalidID is returned when an invalid ID is provided to a method like Delete()
-	ErrInvalidID = errors.New("models: ID provided was invalid")
+	// ErrIdInvalid is returned when an invalid ID is provided to a method like Delete()
+	ErrIdInvalid = errors.New("models: ID provided was invalid")
 
 	// ErrEmailRequire is returned when there is not email set
 	ErrEmailRequired = errors.New("models: email address is required")
@@ -153,7 +153,7 @@ func (uv *userValidator) setRememberIfUnset(user *User) error {
 
 func (uv *userValidator) idGreaterThanZero(user *User) error {
 	if user.ID == 0 {
-		return ErrInvalidID
+		return ErrIdInvalid
 	}
 	return nil
 }

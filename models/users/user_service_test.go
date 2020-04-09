@@ -239,8 +239,8 @@ func TestUserService_Authenticate(t *testing.T) {
 
 	// authenticate with incorrect password
 	_, err = us.Authenticate(userData.Email, "123123")
-	if err != ErrInvalidPassword {
-		t.Fatalf("Authenticate() err = '%v'; want '%v'", err, ErrInvalidPassword)
+	if err != ErrPasswordInvalid {
+		t.Fatalf("Authenticate() err = '%v'; want '%v'", err, ErrPasswordInvalid)
 	}
 }
 
@@ -273,7 +273,7 @@ func TestPasswordHashesMatch(t *testing.T) {
 	}
 
 	err = passwordHashesMatch(userPassByte, incorrectPassByte)
-	if err != ErrInvalidPassword {
-		t.Fatalf("passwordHashesMatch() err = '%v', want '%v'", err, ErrInvalidPassword)
+	if err != ErrPasswordInvalid {
+		t.Fatalf("passwordHashesMatch() err = '%v', want '%v'", err, ErrPasswordInvalid)
 	}
 }

@@ -12,8 +12,8 @@ const (
 )
 
 var (
-	// ErrInvalidPassword is returned when an invalid password is provided
-	ErrInvalidPassword = errors.New("models: provided password is invalid")
+	// ErrPasswordInvalid is returned when an invalid password is provided
+	ErrPasswordInvalid = errors.New("models: provided password is invalid")
 )
 
 // UserService is a set of methods used to work with the user model
@@ -64,7 +64,7 @@ func passwordHashesMatch(userPassHash, inputPass []byte) error {
 	if err != nil {
 		switch err {
 		case bcrypt.ErrMismatchedHashAndPassword:
-			return ErrInvalidPassword
+			return ErrPasswordInvalid
 		default:
 			return err
 		}
