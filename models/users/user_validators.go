@@ -82,15 +82,15 @@ func (uv *userValidator) ByRemember(token string) (*User, error) {
 // like the ID, CreatedAt and UpdatedAt fields.
 func (uv *userValidator) Create(user *User) (string, error) {
 	err := runUserValFunc(user,
+		uv.passwordRequired,
+		uv.passwordLength,
 		uv.bcryptPassword,
 		uv.setRememberIfUnset,
 		uv.hmacRemember,
 		uv.normalizeEmail,
 		uv.requireEmail,
 		uv.emailFormat,
-		uv.emailIsAvail,
-		uv.passwordRequired,
-		uv.passwordLength)
+		uv.emailIsAvail)
 	if err != nil {
 		return "", err
 	}
@@ -101,14 +101,14 @@ func (uv *userValidator) Create(user *User) (string, error) {
 // and call the Update method on the UserDB layer
 func (uv *userValidator) Update(user *User) error {
 	err := runUserValFunc(user,
+		uv.passwordRequired,
+		uv.passwordLength,
 		uv.normalizeEmail,
 		uv.bcryptPassword,
 		uv.hmacRemember,
 		uv.requireEmail,
 		uv.emailFormat,
-		uv.emailIsAvail,
-		uv.passwordRequired,
-		uv.passwordLength)
+		uv.emailIsAvail)
 	if err != nil {
 		return err
 	}
