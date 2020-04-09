@@ -77,7 +77,8 @@ func (uv *userValidator) Create(user *User) (string, error) {
 		uv.setRememberIfUnset,
 		uv.hmacRemember,
 		uv.normalizeEmail,
-		uv.requireEmail)
+		uv.requireEmail,
+		uv.emailFormat)
 	if err != nil {
 		return "", err
 	}
@@ -91,7 +92,8 @@ func (uv *userValidator) Update(user *User) error {
 		uv.normalizeEmail,
 		uv.bcryptPassword,
 		uv.hmacRemember,
-		uv.requireEmail)
+		uv.requireEmail,
+		uv.emailFormat)
 	if err != nil {
 		return err
 	}
