@@ -4,6 +4,7 @@ import (
 	"errors"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"golang.org/x/crypto/bcrypt"
+	"regexp"
 	"strings"
 	"wiki/hash"
 	"wiki/rand"
@@ -33,9 +34,18 @@ func runUserValFunc(user *User, fns ...userValFunc) error {
 	return nil
 }
 
+func newUserValidator(udb UserDB, hmac hash.HMAC) *userValidator {
+	return &userValidator{
+		UserDB:     udb,
+		hmac:       hmac,
+		emailRegex: regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,16}$`),
+	}
+}
+
 type userValidator struct {
 	UserDB
-	hmac hash.HMAC
+	hmac       hash.HMAC
+	emailRegex *regexp.Regexp
 }
 
 // to make sure userValidator implements everything from UserDB interface
