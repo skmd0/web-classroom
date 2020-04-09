@@ -58,7 +58,8 @@ func (uv *userValidator) Create(user *User) (string, error) {
 		uv.bcryptPassword,
 		uv.setRememberIfUnset,
 		uv.hmacRemember,
-		uv.normalizeEmail)
+		uv.normalizeEmail,
+		uv.requireEmail)
 	if err != nil {
 		return "", err
 	}
@@ -71,7 +72,8 @@ func (uv *userValidator) Update(user *User) error {
 	err := runUserValFunc(user,
 		uv.normalizeEmail,
 		uv.bcryptPassword,
-		uv.hmacRemember)
+		uv.hmacRemember,
+		uv.requireEmail)
 	if err != nil {
 		return err
 	}
@@ -133,5 +135,12 @@ func (uv *userValidator) idGreaterThanZero(user *User) error {
 
 func (uv *userValidator) normalizeEmail(user *User) error {
 	user.Email = strings.TrimSpace(strings.ToLower(user.Email))
+	return nil
+}
+
+func (uv *userValidator) requireEmail(user *User) error {
+	if user.Email == "" {
+		return errors.New("email address is required")
+	}
 	return nil
 }
