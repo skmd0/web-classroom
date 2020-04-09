@@ -50,13 +50,24 @@ func (us *userService) Authenticate(email, password string) (*User, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = bcrypt.CompareHashAndPassword([]byte(foundUser.PasswordHash), []byte(password+UserPwPepper))
-	switch err {
-	case nil:
-		return foundUser, nil
-	case bcrypt.ErrMismatchedHashAndPassword:
-		return nil, ErrInvalidPassword
-	default:
+	userPassHash := []byte(foundUser.PasswordHash)
+	inputPassHash := []byte(password + UserPwPepper)
+	if err = passwordHashesMatch(userPassHash, inputPassHash); err != nil {
 		return nil, err
 	}
+	return foundUser, nil
+}
+
+// passHashesMatch compares the bcrypt hashes
+func passwordHashesMatch(userPassHash, inputPassHash []byte) error {
+	err := bcrypt.CompareHashAndPassword(userPassHash, inputPassHash)
+	if err != nil {
+		switch err {
+		case bcrypt.ErrMismatchedHashAndPassword:
+			return ErrInvalidPassword
+		default:
+			return err
+		}
+	}
+	return nil
 }
