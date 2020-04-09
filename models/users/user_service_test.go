@@ -25,7 +25,7 @@ func testingUserService() (UserService, error) {
 		return nil, err
 	}
 	//us.db.LogMode(false)
-	us.DestructiveReset()
+	_ = us.DestructiveReset()
 	return us, nil
 }
 
