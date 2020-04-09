@@ -14,8 +14,10 @@ var (
 	ErrInvalidID = errors.New("models: ID provided was invalid")
 )
 
+// validator function type signature
 type userValFunc func(*User) error
 
+// runUserValFunc loops through all the validator and returns err if any fail
 func runUserValFunc(user *User, fns ...userValFunc) error {
 	for _, fn := range fns {
 		if err := fn(user); err != nil {
@@ -140,7 +142,14 @@ func (uv *userValidator) normalizeEmail(user *User) error {
 
 func (uv *userValidator) requireEmail(user *User) error {
 	if user.Email == "" {
-		return errors.New("email address is required")
+		return ErrEmailRequired
+	}
+	return nil
+}
+
+func (uv *userValidator) emailFormat(user *User) error {
+	if !uv.emailRegex.MatchString(user.Email) {
+		return ErrEmailInvalid
 	}
 	return nil
 }
