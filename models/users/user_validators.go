@@ -12,6 +12,12 @@ import (
 var (
 	// ErrInvalidID is returned when an invalid ID is provided to a method like Delete()
 	ErrInvalidID = errors.New("models: ID provided was invalid")
+
+	// ErrEmailRequire is returned when there is not email set
+	ErrEmailRequired = errors.New("models: email address is required")
+
+	// ErrEmailInvalid is returned when invalid email is provided
+	ErrEmailInvalid = errors.New("models: email address is not valid")
 )
 
 // validator function type signature
