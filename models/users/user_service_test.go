@@ -243,3 +243,37 @@ func TestUserService_Authenticate(t *testing.T) {
 		t.Fatalf("Authenticate() err = '%v'; want '%v'", err, ErrInvalidPassword)
 	}
 }
+
+func TestPasswordHashesMatch(t *testing.T) {
+	us, err := testingUserService()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// create new test user
+	userPassword := "testtest"
+	userData := User{
+		Model:    gorm.Model{},
+		Name:     "HashTest",
+		Email:    "hashtest@hashtest.com",
+		Password: userPassword,
+	}
+	pwHash, err := us.Create(&userData)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	correctPassByte := []byte(userPassword + UserPwPepper)
+	incorrectPassByte := []byte("123123" + UserPwPepper)
+	userPassByte := []byte(pwHash)
+
+	err = passwordHashesMatch(userPassByte, correctPassByte)
+	if err != nil {
+		t.Fatalf("passwordHashesMatch() err = '%v', want nil", err)
+	}
+
+	err = passwordHashesMatch(userPassByte, incorrectPassByte)
+	if err != ErrInvalidPassword {
+		t.Fatalf("passwordHashesMatch() err = '%v', want '%v'", err, ErrInvalidPassword)
+	}
+}
