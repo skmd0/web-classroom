@@ -58,8 +58,10 @@
     {{template "navbar"}}
     <section class="section" style="padding-top: 0.5rem;">
         <div class="container">
-            {{template "alert" .}}
-            {{template "yield" .}}
+            {{if .Alert}}
+                {{template "alert" .Alert}}
+            {{end}}
+            {{template "yield" .Yield}}
         </div>
     </section>
     {{template "footer"}}
