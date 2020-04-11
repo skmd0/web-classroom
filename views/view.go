@@ -40,6 +40,12 @@ func (v *View) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func (v *View) Render(w http.ResponseWriter, data interface{}) error {
 	w.Header().Set("Content-Type", "text/html")
+	switch data.(type) {
+	case Data:
+		// do nothing because data is already correctly set
+	default:
+		data = Data{Yield: data}
+	}
 	return v.Template.ExecuteTemplate(w, v.Layout, data)
 }
 
