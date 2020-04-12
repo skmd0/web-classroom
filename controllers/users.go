@@ -113,13 +113,7 @@ func (u *Users) CookieTest(w http.ResponseWriter, r *http.Request) {
 //
 // GET /signup
 func (u *Users) New(w http.ResponseWriter, r *http.Request) {
-	d := views.Data{
-		Alert: &views.Alert{
-			Level:   views.AlertLvlError,
-			Message: "Something went wrong.",
-		},
-	}
-	err := u.NewView.Render(w, d)
+	err := u.NewView.Render(w, nil)
 	if err != nil {
 		panic(err)
 	}
