@@ -5,6 +5,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"log"
 	"net/http"
+	"wiki/models"
 	"wiki/models/users"
 	"wiki/rand"
 	"wiki/views"
@@ -47,27 +48,34 @@ type LoginForm struct {
 //
 // POST /login
 func (u *Users) LoginUser(w http.ResponseWriter, r *http.Request) {
+	vd := views.Data{}
 	form := LoginForm{}
 	if err := ParseForm(r, &form); err != nil {
-		panic(err)
+		log.Println(err)
+		vd.SetAlert(err)
+		u.LoginView.Render(w, vd)
+		return
 	}
 
 	user, err := u.us.Authenticate(form.Email, form.Password)
 	if err != nil {
 		switch err {
-		case users.ErrPasswordInvalid:
-			http.Error(w, "Invalid password.", http.StatusForbidden)
-		case users.ErrNotFound:
-			http.Error(w, "Invalid email address.", http.StatusForbidden)
+		case models.ErrNotFound:
+			vd.Alert = &views.Alert{
+				Level:   views.AlertLvlError,
+				Message: "Invalid email address",
+			}
 		default:
-			http.Error(w, "Oops something went wrong.", http.StatusInternalServerError)
+			vd.SetAlert(err)
 		}
+		u.LoginView.Render(w, vd)
 		return
 	}
 	user.Password = form.Password
 	err = u.signIn(w, user)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		vd.SetAlert(err)
+		u.LoginView.Render(w, vd)
 		return
 	}
 	http.Redirect(w, r, "/cookie", http.StatusFound)
