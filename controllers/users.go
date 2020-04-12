@@ -64,6 +64,7 @@ func (u *Users) LoginUser(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
+	user.Password = form.Password
 	err = u.signIn(w, user)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
