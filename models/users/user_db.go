@@ -1,13 +1,8 @@
 package users
 
 import (
-	"errors"
 	"github.com/jinzhu/gorm"
-)
-
-var (
-	// ErrNotFound is returned when a resource cannot be found in the database.
-	ErrNotFound = errors.New("models: resource not found")
+	"wiki/models"
 )
 
 // User is representation of the user DB table
@@ -129,7 +124,7 @@ func (ug *userGorm) AutoMigrate() error {
 func first(db *gorm.DB, dst interface{}) error {
 	err := db.First(dst).Error
 	if err == gorm.ErrRecordNotFound {
-		return ErrNotFound
+		return models.ErrNotFound
 	}
 	return err
 }

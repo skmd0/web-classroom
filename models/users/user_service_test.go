@@ -5,6 +5,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"testing"
 	"time"
+	"wiki/models"
 )
 
 func getPostgresLoginString() string {
@@ -135,7 +136,7 @@ func TestDeleteUser(t *testing.T) {
 
 	// Try to find the deleted user again
 	_, gotErr := us.ByID(userData.ID)
-	wantErr := ErrNotFound
+	wantErr := models.ErrNotFound
 	if gotErr != wantErr {
 		t.Fatalf("After deleting the user we got error '%v', but want error '%v'", gotErr, wantErr)
 	}
@@ -233,14 +234,14 @@ func TestUserService_Authenticate(t *testing.T) {
 
 	// authenticate with incorrect email
 	_, err = us.Authenticate("random@email.com", userPassword)
-	if err != ErrNotFound {
-		t.Fatalf("Authenticate() err = '%v'; want '%v'", err, ErrNotFound)
+	if err != models.ErrNotFound {
+		t.Fatalf("Authenticate() err = '%v'; want '%v'", err, models.ErrNotFound)
 	}
 
 	// authenticate with incorrect password
 	_, err = us.Authenticate(userData.Email, "123123")
-	if err != ErrPasswordInvalid {
-		t.Fatalf("Authenticate() err = '%v'; want '%v'", err, ErrPasswordInvalid)
+	if err != models.ErrPasswordInvalid {
+		t.Fatalf("Authenticate() err = '%v'; want '%v'", err, models.ErrPasswordInvalid)
 	}
 }
 
@@ -273,7 +274,7 @@ func TestPasswordHashesMatch(t *testing.T) {
 	}
 
 	err = passwordHashesMatch(userPassByte, incorrectPassByte)
-	if err != ErrPasswordInvalid {
-		t.Fatalf("passwordHashesMatch() err = '%v', want '%v'", err, ErrPasswordInvalid)
+	if err != models.ErrPasswordInvalid {
+		t.Fatalf("passwordHashesMatch() err = '%v', want '%v'", err, models.ErrPasswordInvalid)
 	}
 }

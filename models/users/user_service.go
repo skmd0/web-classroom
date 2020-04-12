@@ -1,19 +1,14 @@
 package users
 
 import (
-	"errors"
 	"golang.org/x/crypto/bcrypt"
 	"wiki/hash"
+	"wiki/models"
 )
 
 const (
 	UserPwPepper  = "my-secret-pepper-string123!"
 	hmacSecretKey = "my-secret-hmac-key"
-)
-
-var (
-	// ErrPasswordInvalid is returned when an invalid password is provided
-	ErrPasswordInvalid = errors.New("models: provided password is invalid")
 )
 
 // UserService is a set of methods used to work with the user model
@@ -64,7 +59,7 @@ func passwordHashesMatch(userPassHash, inputPass []byte) error {
 	if err != nil {
 		switch err {
 		case bcrypt.ErrMismatchedHashAndPassword:
-			return ErrPasswordInvalid
+			return models.ErrPasswordInvalid
 		default:
 			return err
 		}

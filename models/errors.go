@@ -1,8 +1,16 @@
 package models
 
-import "strings"
+import (
+	"strings"
+)
 
 const (
+	// ErrNotFound is returned when a resource cannot be found in the database.
+	ErrNotFound modelError = "models: resource not found"
+
+	// ErrPasswordInvalid is returned when an invalid password is provided
+	ErrPasswordInvalid modelError = "models: provided password is invalid"
+
 	// ErrIdInvalid is returned when an invalid ID is provided to a method like Delete(
 	ErrIdInvalid modelError = "models: ID provided was invalid"
 
@@ -20,6 +28,9 @@ const (
 
 	// ErrPasswordRequired is returned when Update() or Create() is called with no password
 	ErrPasswordRequired modelError = "models: password is required"
+
+	// ErrPasswordHashRequired is returned when password hash is missing
+	ErrPasswordHashRequired modelError = "models: password hash is required"
 
 	// ErrRememberTooShort is returned when remember token is too short
 	ErrRememberTooShort modelError = "models: remember token must be at least 32 bytes"

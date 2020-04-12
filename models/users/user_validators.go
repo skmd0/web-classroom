@@ -196,7 +196,7 @@ func (uv *userValidator) emailFormat(user *User) error {
 
 func (uv *userValidator) emailIsAvail(user *User) error {
 	existing, err := uv.ByEmail(user.Email)
-	if err == ErrNotFound {
+	if err == models.ErrNotFound {
 		// email address is not taken
 		return nil
 	}
@@ -229,7 +229,7 @@ func (uv *userValidator) passwordRequired(user *User) error {
 
 func (uv *userValidator) passwordHashRequired(user *User) error {
 	if user.PasswordHash == "" {
-		return models.ErrPasswordRequired
+		return models.ErrPasswordHashRequired
 	}
 	return nil
 }
