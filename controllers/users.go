@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 	"github.com/jinzhu/gorm"
+	"log"
 	"net/http"
 	"wiki/models/users"
 	"wiki/rand"
@@ -131,9 +132,16 @@ type SignUpForm struct {
 //
 // POST /signup
 func (u *Users) Create(w http.ResponseWriter, r *http.Request) {
+	var vd views.Data
 	var form SignUpForm
 	if err := ParseForm(r, &form); err != nil {
-		panic(err)
+		log.Println(err)
+		vd.Alert = &views.Alert{
+			Level:   views.AlertLvlError,
+			Message: views.AlertMsgGeneric,
+		}
+		u.NewView.Render(w, vd)
+		return
 	}
 
 	user := &users.User{
@@ -145,12 +153,16 @@ func (u *Users) Create(w http.ResponseWriter, r *http.Request) {
 
 	_, err := u.us.Create(user)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		vd.Alert = &views.Alert{
+			Level:   views.AlertLvlError,
+			Message: err.Error(),
+		}
+		u.NewView.Render(w, vd)
 		return
 	}
 	err = u.signIn(w, user)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Redirect(w, r, "/login", http.StatusFound)
 		return
 	}
 	http.Redirect(w, r, "/cookie", http.StatusFound)
