@@ -61,10 +61,7 @@ func (u *Users) LoginUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch err {
 		case models.ErrNotFound:
-			vd.Alert = &views.Alert{
-				Level:   views.AlertLvlError,
-				Message: "Invalid email address",
-			}
+			vd.AlertError("Invalid email address")
 		default:
 			vd.SetAlert(err)
 		}
