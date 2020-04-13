@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"net/http"
+	"wiki/context"
 	"wiki/models/users"
 )
 
@@ -20,10 +21,14 @@ func (mw *RequireUser) ApplyFn(next http.HandlerFunc) http.HandlerFunc {
 			http.Redirect(w, r, "/login", http.StatusFound)
 			return
 		}
-		if _, err = mw.UserService.ByRemember(cookie.Value); err != nil {
+		user, err := mw.UserService.ByRemember(cookie.Value)
+		if err != nil {
 			http.Redirect(w, r, "/login", http.StatusFound)
 			return
 		}
+		ctx := r.Context()
+		ctx = context.WithUser(ctx, user)
+		r = r.WithContext(ctx)
 		next(w, r)
 	})
 }

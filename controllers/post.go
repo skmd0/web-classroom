@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"wiki/context"
 	"wiki/models/posts"
 	"wiki/views"
 )
@@ -39,7 +40,14 @@ func (p *Posts) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	user := context.User(r.Context())
+	if user == nil {
+		http.Redirect(w, r, "/login", http.StatusFound)
+		return
+	}
+
 	post := &posts.Post{
+		UserID:  user.ID,
 		Title:   form.Title,
 		Content: form.Content,
 	}
