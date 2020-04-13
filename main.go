@@ -30,6 +30,7 @@ func main() {
 
 	staticC := controllers.NewStatic()
 	usersC := controllers.NewUsers(services.User)
+	postsC := controllers.NewPosts(services.Post)
 
 	r := mux.NewRouter()
 	r.NotFoundHandler = staticC.NotFoundHandler()
@@ -43,6 +44,9 @@ func main() {
 	r.HandleFunc("/signup", usersC.New).Methods("GET")
 	r.HandleFunc("/signup", usersC.Create).Methods("POST")
 	r.HandleFunc("/cookie", usersC.CookieTest).Methods("GET")
+
+	// Posts
+	r.Handle("/post/new", postsC.New).Methods("GET")
 
 	fmt.Println("Running the server on :3000")
 	http.ListenAndServe(":3000", r)
