@@ -1,6 +1,9 @@
 package controllers
 
 import (
+	"fmt"
+	"log"
+	"net/http"
 	"wiki/models/posts"
 	"wiki/views"
 )
@@ -15,4 +18,38 @@ func NewPosts(ps posts.PostService) *Posts {
 type Posts struct {
 	New *views.View
 	ps  posts.PostService
+}
+
+type NewPostForm struct {
+	Title   string `schema:"title"`
+	Content string `schema:"content"`
+}
+
+// Create is used to process the signup form when a user
+// submits it. This is used to create a new user account.
+//
+// POST /posts
+func (p *Posts) Create(w http.ResponseWriter, r *http.Request) {
+	var vd views.Data
+	var form NewPostForm
+	if err := ParseForm(r, &form); err != nil {
+		log.Println(err)
+		vd.SetAlert(err)
+		p.New.Render(w, vd)
+		return
+	}
+
+	post := &posts.Post{
+		Title:   form.Title,
+		Content: form.Content,
+	}
+
+	err := p.ps.Create(post)
+	if err != nil {
+		vd.SetAlert(err)
+		p.New.Render(w, vd)
+		return
+	}
+
+	fmt.Fprintln(w, post)
 }

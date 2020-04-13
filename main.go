@@ -47,6 +47,7 @@ func main() {
 
 	// Posts
 	r.Handle("/post/new", postsC.New).Methods("GET")
+	r.HandleFunc("/posts", postsC.Create).Methods("POST")
 
 	fmt.Println("Running the server on :3000")
 	http.ListenAndServe(":3000", r)
