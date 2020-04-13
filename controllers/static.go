@@ -28,8 +28,6 @@ func NewStatic() *Static {
 func (s *Static) NotFoundHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
-		if err := s.NotFound.Render(w, r); err != nil {
-			panic(err)
-		}
+		s.NotFound.Render(w, r)
 	}
 }

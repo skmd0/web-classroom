@@ -33,9 +33,7 @@ type Users struct {
 //
 // GET /login
 func (u *Users) Login(w http.ResponseWriter, r *http.Request) {
-	if err := u.LoginView.Render(w, nil); err != nil {
-		panic(err)
-	}
+	u.LoginView.Render(w, nil)
 }
 
 type LoginForm struct {
@@ -120,10 +118,7 @@ func (u *Users) CookieTest(w http.ResponseWriter, r *http.Request) {
 //
 // GET /signup
 func (u *Users) New(w http.ResponseWriter, r *http.Request) {
-	err := u.NewView.Render(w, nil)
-	if err != nil {
-		panic(err)
-	}
+	u.NewView.Render(w, nil)
 }
 
 type SignUpForm struct {
