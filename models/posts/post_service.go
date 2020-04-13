@@ -10,10 +10,12 @@ func NewPostService(db *gorm.DB) PostService {
 	return &postService{uv}
 }
 
+// PostService is a contract for the consumers
 type PostService interface {
 	PostDB
 }
 
+// Implementation of the PostService
 type postService struct {
 	PostDB
 }

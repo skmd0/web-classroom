@@ -18,6 +18,8 @@ type postGorm struct {
 	db *gorm.DB
 }
 
+var _ PostDB = &postGorm{}
+
 func (pg *postGorm) Create(post *Post) error {
-	return nil
+	return pg.db.Create(post).Error
 }

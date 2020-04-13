@@ -13,7 +13,7 @@ func NewServices(connectionInfo string) (*Services, error) {
 	}
 	db.LogMode(true)
 	return &Services{
-		Post: nil,
+		Post: posts.NewPostService(db),
 		User: users.NewUserService(db),
 		db:   db,
 	}, nil
