@@ -9,3 +9,15 @@ type Post struct {
 	Title   string `gorm:"not_null"`
 	Content string `gorm:"not_null"`
 }
+
+type PostDB interface {
+	Create(post *Post) error
+}
+
+type postGorm struct {
+	db *gorm.DB
+}
+
+func (pg *postGorm) Create(post *Post) error {
+	return nil
+}

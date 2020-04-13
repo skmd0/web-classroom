@@ -3,11 +3,10 @@ package main
 import (
 	"fmt"
 	"github.com/gorilla/mux"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"net/http"
 	"wiki/controllers"
-	"wiki/models/users"
-
-	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"wiki/util"
 )
 
 const (
@@ -21,16 +20,16 @@ const (
 func main() {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user,
 		password, dbname)
-	us, err := users.NewUserService(psqlInfo)
+	services, err := util.NewServices(psqlInfo)
 	if err != nil {
 		panic(err)
 	}
-	defer us.Close()
-	//us.DestructiveReset()
-	us.AutoMigrate()
+	defer services.Close()
+	//services.DestructiveReset()
+	services.AutoMigrate()
 
 	staticC := controllers.NewStatic()
-	usersC := controllers.NewUsers(us)
+	usersC := controllers.NewUsers(services.User)
 
 	r := mux.NewRouter()
 	r.NotFoundHandler = staticC.NotFoundHandler()

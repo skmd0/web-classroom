@@ -25,11 +25,6 @@ type UserDB interface {
 	Create(user *User) (string, error)
 	Update(user *User) error
 	Delete(id uint) error
-
-	Close() error
-
-	AutoMigrate() error
-	DestructiveReset() error
 }
 
 // userGorm is the implementation of the UserDB interface
@@ -39,14 +34,6 @@ type userGorm struct {
 
 // to make sure userGorm implements everything from UserDB interface
 var _ UserDB = &userGorm{}
-
-func newUserGorm(connectionInfo string) (*userGorm, error) {
-	db, err := gorm.Open("postgres", connectionInfo)
-	if err != nil {
-		return nil, err
-	}
-	return &userGorm{db: db}, nil
-}
 
 // ByID looks up the user by the provided ID.
 func (ug *userGorm) ByID(id uint) (*User, error) {
@@ -97,27 +84,6 @@ func (ug *userGorm) Update(user *User) error {
 func (ug *userGorm) Delete(id uint) error {
 	user := User{Model: gorm.Model{ID: id}}
 	return ug.db.Delete(&user).Error
-}
-
-// Close closes the UserService database connection.
-func (ug *userGorm) Close() error {
-	return ug.db.Close()
-}
-
-// DestructiveReset drops the user table and rebuilds it
-func (ug *userGorm) DestructiveReset() error {
-	if err := ug.db.DropTableIfExists(&User{}).Error; err != nil {
-		return err
-	}
-	return ug.AutoMigrate()
-}
-
-// AutoMigrate tries to automatically migrate the DB schema changes
-func (ug *userGorm) AutoMigrate() error {
-	if err := ug.db.AutoMigrate(&User{}).Error; err != nil {
-		return err
-	}
-	return nil
 }
 
 // first executes a query from gorm.DB and writes data to dst by reference.

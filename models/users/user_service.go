@@ -1,6 +1,7 @@
 package users
 
 import (
+	"github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
 	"wiki/hash"
 	"wiki/models"
@@ -28,14 +29,11 @@ type userService struct {
 // to make sure userValidator implements everything from UserDB interface
 var _ UserService = &userService{}
 
-func NewUserService(connectionInfo string) (UserService, error) {
-	ug, err := newUserGorm(connectionInfo)
-	if err != nil {
-		return nil, err
-	}
+func NewUserService(db *gorm.DB) UserService {
+	ug := &userGorm{db: db}
 	hmac := hash.NewHMAC(hmacSecretKey)
 	uv := newUserValidator(ug, hmac)
-	return &userService{uv}, nil
+	return &userService{uv}
 }
 
 // Authenticate is used to authenticate a user with the provided
