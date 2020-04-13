@@ -1,24 +1,30 @@
 package controllers
 
 import (
-	"fmt"
+	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+	"strconv"
 	"wiki/context"
+	"wiki/models"
 	"wiki/models/posts"
 	"wiki/views"
 )
 
-func NewPosts(ps posts.PostService) *Posts {
+func NewPosts(ps posts.PostService, r *mux.Router) *Posts {
 	return &Posts{
-		New: views.NewView("bulma", "posts/new"),
-		ps:  ps,
+		New:      views.NewView("bulma", "posts/new"),
+		ShowView: views.NewView("bulma", "posts/show"),
+		ps:       ps,
+		r:        r,
 	}
 }
 
 type Posts struct {
-	New *views.View
-	ps  posts.PostService
+	New      *views.View
+	ShowView *views.View
+	ps       posts.PostService
+	r        *mux.Router
 }
 
 type NewPostForm struct {
@@ -59,5 +65,32 @@ func (p *Posts) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Fprintln(w, post)
+	url, err := p.r.Get("show_post").URL("id", strconv.Itoa(int(post.ID)))
+	if err != nil {
+		http.Redirect(w, r, "/", http.StatusFound)
+		return
+	}
+	http.Redirect(w, r, url.Path, http.StatusFound)
+}
+
+// GET /posts/:id
+func (p *Posts) Show(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	idString := vars["id"]
+	id, err := strconv.Atoi(idString)
+	if err != nil {
+		http.Error(w, "Invalid gallery ID", http.StatusNotFound)
+	}
+	post, err := p.ps.ByID(uint(id))
+	if err != nil {
+		switch err {
+		case models.ErrNotFound:
+			http.Error(w, "Post not found in DB.", http.StatusNotFound)
+		default:
+			http.Error(w, "Whoops! Something went wrong.", http.StatusInternalServerError)
+		}
+		return
+	}
+	vd := views.Data{Yield: post}
+	p.ShowView.Render(w, vd)
 }

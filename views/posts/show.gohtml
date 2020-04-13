@@ -1,0 +1,36 @@
+{{define "yield"}}
+    <div class="columns">
+        {{template "side-menu"}}
+        <div class="column">
+            <div class="box">
+                <div class="tabs is-centered is-toggle">
+                    <ul>
+                        <li class="is-active">
+                            <a>
+                                <span class="icon is-small"><i class="fas fa-file-alt" aria-hidden="true"></i></span>
+                                <span>Theory</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a>
+                                <span class="icon is-small"><i class="fas fa-pencil-alt" aria-hidden="true"></i></span>
+                                <span>Exercises</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a>
+                                <span class="icon is-small"><i class="fas fa-link" aria-hidden="true"></i></span>
+                                <span>Sources</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <h1 class="title">{{.Title}}</h1>
+                <div class="content">
+                    {{.Content}}
+                </div>
+            </div>
+        </div>
+    </div>
+{{end}}

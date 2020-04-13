@@ -29,16 +29,15 @@ func main() {
 	//services.DestructiveReset()
 	services.AutoMigrate()
 
+	r := mux.NewRouter()
+
 	staticC := controllers.NewStatic()
 	usersC := controllers.NewUsers(services.User)
-	postsC := controllers.NewPosts(services.Post)
+	postsC := controllers.NewPosts(services.Post, r)
 
-	r := mux.NewRouter()
 	r.NotFoundHandler = staticC.NotFoundHandler()
 	r.Handle("/", staticC.Index).Methods("GET")
-	r.Handle("/content/{category}/{topic}/post/{id}", staticC.Post).Methods("GET")
 	r.Handle("/content/categories", staticC.Categories).Methods("GET")
-	r.Handle("/content/{category}/", staticC.Post).Methods("GET")
 	r.Handle("/user/{username}", staticC.Control).Methods("GET")
 	r.HandleFunc("/login", usersC.Login).Methods("GET")
 	r.HandleFunc("/login", usersC.LoginUser).Methods("POST")
@@ -50,6 +49,7 @@ func main() {
 	requireUserMw := middleware.RequireUser{UserService: services.User}
 	r.Handle("/post/new", requireUserMw.Apply(postsC.New)).Methods("GET")
 	r.HandleFunc("/posts", requireUserMw.ApplyFn(postsC.Create)).Methods("POST")
+	r.HandleFunc("/post/{id:[0-9]+}", postsC.Show).Methods("GET").Name("show_post")
 
 	fmt.Println("Running the server on :3000")
 	http.ListenAndServe(":3000", r)
