@@ -41,5 +41,5 @@ func (s *Services) DestructiveReset() error {
 
 // AutoMigrate tries to automatically migrate the DB schema changes
 func (s *Services) AutoMigrate() error {
-	return s.db.AutoMigrate(&users.User{}).Error
+	return s.db.AutoMigrate(&users.User{}, &posts.Post{}).Error
 }
