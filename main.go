@@ -6,6 +6,7 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"net/http"
 	"wiki/controllers"
+	"wiki/middleware"
 	"wiki/util"
 )
 
@@ -46,8 +47,9 @@ func main() {
 	r.HandleFunc("/cookie", usersC.CookieTest).Methods("GET")
 
 	// Posts
-	r.Handle("/post/new", postsC.New).Methods("GET")
-	r.HandleFunc("/posts", postsC.Create).Methods("POST")
+	requireUserMw := middleware.RequireUser{UserService: services.User}
+	r.Handle("/post/new", requireUserMw.Apply(postsC.New)).Methods("GET")
+	r.HandleFunc("/posts", requireUserMw.ApplyFn(postsC.Create)).Methods("POST")
 
 	fmt.Println("Running the server on :3000")
 	http.ListenAndServe(":3000", r)
