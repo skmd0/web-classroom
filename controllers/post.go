@@ -15,6 +15,7 @@ func NewPosts(ps posts.PostService, r *mux.Router) *Posts {
 	return &Posts{
 		New:      views.NewView("bulma", "posts/new"),
 		ShowView: views.NewView("bulma", "posts/show"),
+		EditView: views.NewView("bulma", "posts/edit"),
 		ps:       ps,
 		r:        r,
 	}
@@ -23,6 +24,7 @@ func NewPosts(ps posts.PostService, r *mux.Router) *Posts {
 type Posts struct {
 	New      *views.View
 	ShowView *views.View
+	EditView *views.View
 	ps       posts.PostService
 	r        *mux.Router
 }
@@ -73,13 +75,13 @@ func (p *Posts) Create(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, url.Path, http.StatusFound)
 }
 
-// GET /posts/:id
-func (p *Posts) Show(w http.ResponseWriter, r *http.Request) {
+func (p *Posts) postByID(w http.ResponseWriter, r *http.Request) (*posts.Post, error) {
 	vars := mux.Vars(r)
 	idString := vars["id"]
 	id, err := strconv.Atoi(idString)
 	if err != nil {
 		http.Error(w, "Invalid gallery ID", http.StatusNotFound)
+		return nil, err
 	}
 	post, err := p.ps.ByID(uint(id))
 	if err != nil {
@@ -89,8 +91,36 @@ func (p *Posts) Show(w http.ResponseWriter, r *http.Request) {
 		default:
 			http.Error(w, "Whoops! Something went wrong.", http.StatusInternalServerError)
 		}
+		return nil, err
+	}
+	return post, nil
+}
+
+// GET /posts/:id
+func (p *Posts) Show(w http.ResponseWriter, r *http.Request) {
+	post, err := p.postByID(w, r)
+	if err != nil {
+		// the postByID method already handled the rendering of the error
 		return
 	}
 	vd := views.Data{Yield: post}
 	p.ShowView.Render(w, vd)
+}
+
+// Edit
+//
+// /GET /post/:id/edit
+func (p *Posts) Edit(w http.ResponseWriter, r *http.Request) {
+	post, err := p.postByID(w, r)
+	if err != nil {
+		// the postByID method already handled the rendering of the error
+		return
+	}
+	user := context.User(r.Context())
+	if post.UserID != user.ID {
+		http.Error(w, "Gallery not found", http.StatusNotFound)
+		return
+	}
+	vd := views.Data{Yield: post}
+	p.EditView.Render(w, vd)
 }
