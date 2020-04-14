@@ -36,6 +36,17 @@ func (pv *postValidator) Create(post *Post) error {
 	return pv.PostDB.Create(post)
 }
 
+func (pv *postValidator) Update(post *Post) error {
+	err := runPostValFunc(post,
+		pv.titleRequired,
+		pv.contentRequired,
+		pv.userIDRequired)
+	if err != nil {
+		return err
+	}
+	return pv.PostDB.Update(post)
+}
+
 func (pv *postValidator) userIDRequired(post *Post) error {
 	if post.UserID <= 0 {
 		return models.ErrUserIdRequired

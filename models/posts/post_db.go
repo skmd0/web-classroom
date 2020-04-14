@@ -18,6 +18,7 @@ type Post struct {
 type PostDB interface {
 	ByID(id uint) (*Post, error)
 	Create(post *Post) error
+	Update(post *Post) error
 }
 
 type postGorm struct {
@@ -28,6 +29,10 @@ var _ PostDB = &postGorm{}
 
 func (pg *postGorm) Create(post *Post) error {
 	return pg.db.Create(post).Error
+}
+
+func (pg *postGorm) Update(post *Post) error {
+	return pg.db.Save(post).Error
 }
 
 // ByID looks up the user by the provided ID.

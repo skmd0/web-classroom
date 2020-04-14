@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"github.com/gomarkdown/markdown"
 	"github.com/gorilla/mux"
 	"html/template"
@@ -128,4 +129,48 @@ func (p *Posts) Edit(w http.ResponseWriter, r *http.Request) {
 	}
 	vd := views.Data{Yield: post}
 	p.EditView.Render(w, vd)
+}
+
+// Update
+//
+// /POST /post/:id/update
+func (p *Posts) Update(w http.ResponseWriter, r *http.Request) {
+	post, err := p.postByID(w, r)
+	if err != nil {
+		// the postByID method already handled the rendering of the error
+		return
+	}
+	user := context.User(r.Context())
+	if post.UserID != user.ID {
+		http.Error(w, "Gallery not found", http.StatusNotFound)
+		return
+	}
+
+	var form NewPostForm
+	vd := views.Data{Yield: post}
+	if err := ParseForm(r, &form); err != nil {
+		log.Println(err)
+		vd.SetAlert(err)
+		p.EditView.Render(w, vd)
+		return
+	}
+	post.Title = form.Title
+	post.Content = form.Content
+	err = p.ps.Update(post)
+	if err != nil {
+		log.Println(err)
+		vd.SetAlert(err)
+		p.EditView.Render(w, vd)
+		return
+	}
+
+	vars := mux.Vars(r)
+	idString := vars["id"]
+	id, err := strconv.Atoi(idString)
+	if err != nil {
+		http.Error(w, "Invalid gallery ID", http.StatusNotFound)
+		return
+	}
+	urlPath := fmt.Sprintf("/post/%d", id)
+	http.Redirect(w, r, urlPath, http.StatusFound)
 }
