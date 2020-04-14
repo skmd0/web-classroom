@@ -1,7 +1,9 @@
 package controllers
 
 import (
+	"github.com/gomarkdown/markdown"
 	"github.com/gorilla/mux"
+	"html/template"
 	"log"
 	"net/http"
 	"strconv"
@@ -103,6 +105,9 @@ func (p *Posts) Show(w http.ResponseWriter, r *http.Request) {
 		// the postByID method already handled the rendering of the error
 		return
 	}
+	md := []byte(post.Content)
+	html := markdown.ToHTML(md, nil, nil)
+	post.ContentHTML = template.HTML(html)
 	vd := views.Data{Yield: post}
 	p.ShowView.Render(w, vd)
 }
