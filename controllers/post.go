@@ -181,3 +181,30 @@ func (p *Posts) Update(w http.ResponseWriter, r *http.Request) {
 	urlPath := fmt.Sprintf("/post/%d", id)
 	http.Redirect(w, r, urlPath, http.StatusFound)
 }
+
+// Delete
+//
+// /POST /post/:id/delete
+func (p *Posts) Delete(w http.ResponseWriter, r *http.Request) {
+	post, err := p.postByID(w, r)
+	if err != nil {
+		// the postByID method already handled the rendering of the error
+		return
+	}
+	user := context.User(r.Context())
+	if post.UserID != user.ID {
+		http.Error(w, "Gallery not found", http.StatusNotFound)
+		return
+	}
+
+	vd := views.Data{Yield: post}
+	err = p.ps.Delete(post.ID)
+	if err != nil {
+		log.Println(err)
+		vd.SetAlert(err)
+		p.EditView.Render(w, vd)
+		return
+	}
+	vd.AlertSuccess("Post deleted!")
+	p.PostIndexView.Render(w, vd)
+}

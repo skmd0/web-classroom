@@ -47,6 +47,24 @@ func (pv *postValidator) Update(post *Post) error {
 	return pv.PostDB.Update(post)
 }
 
+func (pv *postValidator) Delete(id uint) error {
+	var post Post
+	post.ID = id
+	err := runPostValFunc(&post,
+		pv.idGreaterThanZero)
+	if err != nil {
+		return err
+	}
+	return pv.PostDB.Delete(id)
+}
+
+func (pv *postValidator) idGreaterThanZero(post *Post) error {
+	if post.ID == 0 {
+		return models.ErrIdInvalid
+	}
+	return nil
+}
+
 func (pv *postValidator) userIDRequired(post *Post) error {
 	if post.UserID <= 0 {
 		return models.ErrUserIdRequired

@@ -19,6 +19,7 @@ type PostDB interface {
 	ByID(id uint) (*Post, error)
 	Create(post *Post) error
 	Update(post *Post) error
+	Delete(id uint) error
 }
 
 type postGorm struct {
@@ -33,6 +34,11 @@ func (pg *postGorm) Create(post *Post) error {
 
 func (pg *postGorm) Update(post *Post) error {
 	return pg.db.Save(post).Error
+}
+
+func (pg *postGorm) Delete(id uint) error {
+	post := Post{Model: gorm.Model{ID: id}}
+	return pg.db.Delete(&post).Error
 }
 
 // ByID looks up the user by the provided ID.
