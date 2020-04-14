@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 	"wiki/context"
 	"wiki/models"
 	"wiki/models/posts"
@@ -82,7 +83,15 @@ func (p *Posts) Create(w http.ResponseWriter, r *http.Request) {
 
 // /GET /posts
 func (p *Posts) PostIndex(w http.ResponseWriter, r *http.Request) {
-	p.PostIndexView.Render(w, nil)
+	user := context.User(r.Context())
+
+	postsDB, err := p.ps.ByUserID(user.ID)
+	if err != nil {
+		http.Error(w, "Something went wrong.", http.StatusInternalServerError)
+		return
+	}
+	vd := views.Data{Yield: postsDB}
+	p.PostIndexView.Render(w, vd)
 }
 
 func (p *Posts) postByID(w http.ResponseWriter, r *http.Request) (*posts.Post, error) {
