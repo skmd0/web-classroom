@@ -17,6 +17,7 @@ type Post struct {
 
 type PostDB interface {
 	ByID(id uint) (*Post, error)
+	ByUserID(id uint) (*[]Post, error)
 	Create(post *Post) error
 	Update(post *Post) error
 	Delete(id uint) error
@@ -50,6 +51,12 @@ func (pg *postGorm) ByID(id uint) (*Post, error) {
 		return nil, err
 	}
 	return &post, err
+}
+
+func (pg *postGorm) ByUserID(id uint) (*[]Post, error) {
+	var posts []Post
+	pg.db.Where("user_id = ?", id).Find(&posts)
+	return &posts, nil
 }
 
 // first executes a query from gorm.DB and writes data to dst by reference.
