@@ -208,6 +208,5 @@ func (p *Posts) Delete(w http.ResponseWriter, r *http.Request) {
 		p.EditView.Render(w, vd)
 		return
 	}
-	vd.AlertSuccess("Post deleted!")
-	p.PostIndexView.Render(w, vd)
+	http.Redirect(w, r, "/posts", http.StatusFound)
 }
