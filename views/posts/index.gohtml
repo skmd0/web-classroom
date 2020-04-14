@@ -1,11 +1,15 @@
 {{define "yield"}}
     <div class="columns">
-        {{template "side-menu"}}
+        {{template "sideIndex"}}
         <div class="column">
             <div class="box">
                 <h1 class="title">All posts</h1>
                 <div class="content">
-                    Display all posts here.
+                    <ul>
+                        {{range .}}
+                            <li><a href="/post/{{.ID}}">{{.Title}}</a></li>
+                        {{end}}
+                    </ul>
                 </div>
             </div>
         </div>
