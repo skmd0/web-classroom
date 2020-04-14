@@ -16,20 +16,22 @@ import (
 
 func NewPosts(ps posts.PostService, r *mux.Router) *Posts {
 	return &Posts{
-		New:      views.NewView("bulma", "posts/new"),
-		ShowView: views.NewView("bulma", "posts/show"),
-		EditView: views.NewView("bulma", "posts/edit"),
-		ps:       ps,
-		r:        r,
+		New:           views.NewView("bulma", "posts/new"),
+		ShowView:      views.NewView("bulma", "posts/show"),
+		EditView:      views.NewView("bulma", "posts/edit"),
+		PostIndexView: views.NewView("bulma", "posts/index"),
+		ps:            ps,
+		r:             r,
 	}
 }
 
 type Posts struct {
-	New      *views.View
-	ShowView *views.View
-	EditView *views.View
-	ps       posts.PostService
-	r        *mux.Router
+	New           *views.View
+	ShowView      *views.View
+	EditView      *views.View
+	PostIndexView *views.View
+	ps            posts.PostService
+	r             *mux.Router
 }
 
 type NewPostForm struct {
@@ -76,6 +78,11 @@ func (p *Posts) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	http.Redirect(w, r, url.Path, http.StatusFound)
+}
+
+// /GET /posts
+func (p *Posts) PostIndex(w http.ResponseWriter, r *http.Request) {
+	p.PostIndexView.Render(w, nil)
 }
 
 func (p *Posts) postByID(w http.ResponseWriter, r *http.Request) (*posts.Post, error) {
