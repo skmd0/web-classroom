@@ -113,7 +113,10 @@ func (p *Posts) Show(w http.ResponseWriter, r *http.Request) {
 		// the postByID method already handled the rendering of the error
 		return
 	}
-	md := []byte(post.Content)
+	parsedContent := strings.ReplaceAll(post.Content, "\n", `
+
+`)
+	md := []byte(parsedContent)
 	html := markdown.ToHTML(md, nil, nil)
 	post.ContentHTML = template.HTML(html)
 	vd := views.Data{Yield: post}
