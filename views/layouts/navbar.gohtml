@@ -19,9 +19,16 @@
                 <div class="navbar-end">
                     <div class="navbar-item">
                         <div class="buttons">
-                            <a href="/login" class="button is-primary">
-                                <strong>Login</strong>
-                            </a>
+                            {{if .User}}
+                                <a href="/" class="button is-primary">
+                                    <span class="icon is-small"><i class="fas fa-user"></i></span>
+                                    <strong>{{.User.Name}}</strong>
+                                </a>
+                            {{else}}
+                                <a href="/login" class="button is-primary">
+                                    <strong>Login</strong>
+                                </a>
+                            {{end}}
                         </div>
                     </div>
                 </div>
