@@ -18,6 +18,7 @@ type Post struct {
 type PostDB interface {
 	ByID(id uint) (*Post, error)
 	ByUserID(id uint) (*[]Post, error)
+	ByUserIdWithLimit(id uint, limit int) (*[]Post, error)
 	Create(post *Post) error
 	Update(post *Post) error
 	Delete(id uint) error
@@ -56,6 +57,12 @@ func (pg *postGorm) ByID(id uint) (*Post, error) {
 func (pg *postGorm) ByUserID(id uint) (*[]Post, error) {
 	var posts []Post
 	pg.db.Where("user_id = ?", id).Find(&posts)
+	return &posts, nil
+}
+
+func (pg *postGorm) ByUserIdWithLimit(id uint, limit int) (*[]Post, error) {
+	var posts []Post
+	pg.db.Where("user_id = ?", id).Limit(limit).Find(&posts)
 	return &posts, nil
 }
 
