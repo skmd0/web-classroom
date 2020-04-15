@@ -144,5 +144,19 @@ func (u *Users) Create(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/login", http.StatusFound)
 		return
 	}
-	http.Redirect(w, r, "/cookie", http.StatusFound)
+	http.Redirect(w, r, "/", http.StatusFound)
+}
+
+// /GET /profile
+func (u *Users) Profile(w http.ResponseWriter, r *http.Request) {
+	var vd views.Data
+	user := context.User(r.Context())
+	vd.Yield = user
+	u.ProfileView.Render(w, r, vd)
+}
+
+// /GET /logout
+func (u *Users) Logout(w http.ResponseWriter, r *http.Request) {
+	var vd views.Data
+
 }
