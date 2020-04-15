@@ -4,6 +4,8 @@ import (
 	"github.com/jinzhu/gorm"
 	"log"
 	"net/http"
+	"time"
+	"wiki/context"
 	"wiki/models"
 	"wiki/models/users"
 	"wiki/rand"
@@ -159,6 +161,14 @@ func (u *Users) Profile(w http.ResponseWriter, r *http.Request) {
 
 // /GET /logout
 func (u *Users) Logout(w http.ResponseWriter, r *http.Request) {
-	var vd views.Data
-
+	cookie, err := r.Cookie("remember_token")
+	if err != nil {
+		http.Error(w, "Something went wrong. You were NOT signed out. Please try later.", http.StatusInternalServerError)
+		return
+	}
+	expireTime := time.Now().Add(time.Duration(-1) * time.Minute)
+	cookie.Expires = expireTime
+	cookie.Value = ""
+	http.SetCookie(w, cookie)
+	http.Redirect(w, r, "/", http.StatusFound)
 }
