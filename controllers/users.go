@@ -16,16 +16,18 @@ import (
 // initial setup.
 func NewUsers(us users.UserService) *Users {
 	return &Users{
-		LoginView: views.NewView("bulma", "users/login"),
-		NewView:   views.NewView("bulma", "users/new"),
-		us:        us,
+		LoginView:   views.NewView("bulma", "users/login"),
+		NewView:     views.NewView("bulma", "users/new"),
+		ProfileView: views.NewView("bulma", "users/profile"),
+		us:          us,
 	}
 }
 
 type Users struct {
-	LoginView *views.View
-	NewView   *views.View
-	us        users.UserService
+	LoginView   *views.View
+	NewView     *views.View
+	ProfileView *views.View
+	us          users.UserService
 }
 
 // Login is used to render the login form where user can login.

@@ -1,0 +1,23 @@
+{{define "yield"}}
+    <div class="columns">
+        {{template "side-menu" .}}
+        <div class="column">
+            <div class="box">
+                <h1 class="title">Profile</h1>
+                <div class="content">
+                    <p>
+                   <span class="icon is-large">
+                   <i class="fas fa-user"></i>
+                   </span>
+                        {{.Name}}
+                    </p>
+                    <p>
+                        Email: {{.Email}}
+                    </p>
+                    <hr>
+                    <a href="/logout" class="button is-danger">Log out</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{{end}}
