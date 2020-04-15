@@ -6,7 +6,6 @@ import (
 )
 
 type Static struct {
-	Index      *views.View
 	Categories *views.View
 	Topic      *views.View
 	Control    *views.View
@@ -15,7 +14,6 @@ type Static struct {
 
 func NewStatic() *Static {
 	return &Static{
-		Index:      views.NewView("bulma", "static/index"),
 		Categories: views.NewView("bulma", "categories"),
 		Topic:      views.NewView("bulma", "topic"),
 		Control:    views.NewView("bulma", "control"),
