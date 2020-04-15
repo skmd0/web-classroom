@@ -50,7 +50,7 @@ func (p *Posts) Create(w http.ResponseWriter, r *http.Request) {
 	if err := ParseForm(r, &form); err != nil {
 		log.Println(err)
 		vd.SetAlert(err)
-		p.New.Render(w, vd)
+		p.New.Render(w, r, vd)
 		return
 	}
 
@@ -69,7 +69,7 @@ func (p *Posts) Create(w http.ResponseWriter, r *http.Request) {
 	err := p.ps.Create(post)
 	if err != nil {
 		vd.SetAlert(err)
-		p.New.Render(w, vd)
+		p.New.Render(w, r, vd)
 		return
 	}
 
@@ -91,7 +91,7 @@ func (p *Posts) PostIndex(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	vd := views.Data{Yield: postsDB}
-	p.PostIndexView.Render(w, vd)
+	p.PostIndexView.Render(w, r, vd)
 }
 
 func (p *Posts) postByID(w http.ResponseWriter, r *http.Request) (*posts.Post, error) {
@@ -129,7 +129,7 @@ func (p *Posts) Show(w http.ResponseWriter, r *http.Request) {
 	html := markdown.ToHTML(md, nil, nil)
 	post.ContentHTML = template.HTML(html)
 	vd := views.Data{Yield: post}
-	p.ShowView.Render(w, vd)
+	p.ShowView.Render(w, r, vd)
 }
 
 // Edit
@@ -147,7 +147,7 @@ func (p *Posts) Edit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	vd := views.Data{Yield: post}
-	p.EditView.Render(w, vd)
+	p.EditView.Render(w, r, vd)
 }
 
 // Update
@@ -170,7 +170,7 @@ func (p *Posts) Update(w http.ResponseWriter, r *http.Request) {
 	if err := ParseForm(r, &form); err != nil {
 		log.Println(err)
 		vd.SetAlert(err)
-		p.EditView.Render(w, vd)
+		p.EditView.Render(w, r, vd)
 		return
 	}
 	post.Title = form.Title
@@ -179,7 +179,7 @@ func (p *Posts) Update(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println(err)
 		vd.SetAlert(err)
-		p.EditView.Render(w, vd)
+		p.EditView.Render(w, r, vd)
 		return
 	}
 
@@ -214,7 +214,7 @@ func (p *Posts) Delete(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println(err)
 		vd.SetAlert(err)
-		p.EditView.Render(w, vd)
+		p.EditView.Render(w, r, vd)
 		return
 	}
 	http.Redirect(w, r, "/posts", http.StatusFound)

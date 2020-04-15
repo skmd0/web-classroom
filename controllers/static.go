@@ -26,6 +26,6 @@ func NewStatic() *Static {
 func (s *Static) NotFoundHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
-		s.NotFound.Render(w, r)
+		s.NotFound.Render(w, r, nil)
 	}
 }

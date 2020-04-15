@@ -1,6 +1,9 @@
 package views
 
-import "log"
+import (
+	"log"
+	"wiki/models/users"
+)
 
 const (
 	AlertLvlError   = "is-danger"
@@ -21,6 +24,7 @@ type Alert struct {
 // Data is a top level wrapper of data that views render
 type Data struct {
 	Alert *Alert
+	User  *users.User
 	Yield interface{}
 }
 

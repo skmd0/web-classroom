@@ -33,7 +33,7 @@ type Users struct {
 //
 // GET /login
 func (u *Users) Login(w http.ResponseWriter, r *http.Request) {
-	u.LoginView.Render(w, nil)
+	u.LoginView.Render(w, r, nil)
 }
 
 type LoginForm struct {
@@ -51,7 +51,7 @@ func (u *Users) LoginUser(w http.ResponseWriter, r *http.Request) {
 	if err := ParseForm(r, &form); err != nil {
 		log.Println(err)
 		vd.SetAlert(err)
-		u.LoginView.Render(w, vd)
+		u.LoginView.Render(w, r, vd)
 		return
 	}
 
@@ -63,17 +63,17 @@ func (u *Users) LoginUser(w http.ResponseWriter, r *http.Request) {
 		default:
 			vd.SetAlert(err)
 		}
-		u.LoginView.Render(w, vd)
+		u.LoginView.Render(w, r, vd)
 		return
 	}
 	user.Password = form.Password
 	err = u.signIn(w, user)
 	if err != nil {
 		vd.SetAlert(err)
-		u.LoginView.Render(w, vd)
+		u.LoginView.Render(w, r, vd)
 		return
 	}
-	http.Redirect(w, r, "/cookie", http.StatusFound)
+	http.Redirect(w, r, "/", http.StatusFound)
 }
 
 func (u *Users) signIn(w http.ResponseWriter, user *users.User) error {
@@ -118,7 +118,7 @@ func (u *Users) CookieTest(w http.ResponseWriter, r *http.Request) {
 //
 // GET /signup
 func (u *Users) New(w http.ResponseWriter, r *http.Request) {
-	u.NewView.Render(w, nil)
+	u.NewView.Render(w, r, nil)
 }
 
 type SignUpForm struct {
@@ -138,7 +138,7 @@ func (u *Users) Create(w http.ResponseWriter, r *http.Request) {
 	if err := ParseForm(r, &form); err != nil {
 		log.Println(err)
 		vd.SetAlert(err)
-		u.NewView.Render(w, vd)
+		u.NewView.Render(w, r, vd)
 		return
 	}
 
@@ -152,7 +152,7 @@ func (u *Users) Create(w http.ResponseWriter, r *http.Request) {
 	_, err := u.us.Create(user)
 	if err != nil {
 		vd.SetAlert(err)
-		u.NewView.Render(w, vd)
+		u.NewView.Render(w, r, vd)
 		return
 	}
 	err = u.signIn(w, user)
