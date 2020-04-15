@@ -87,10 +87,11 @@ func (p *Posts) Create(w http.ResponseWriter, r *http.Request) {
 func (p *Posts) Homepage(w http.ResponseWriter, r *http.Request) {
 	var vd views.Data
 	user := context.User(r.Context())
-
-	postsDB, err := p.ps.ByUserIdWithLimit(user.ID, 10)
-	if err == nil {
-		vd.Yield = postsDB
+	if user != nil {
+		postsDB, err := p.ps.ByUserIdWithLimit(user.ID, 10)
+		if err == nil {
+			vd.Yield = postsDB
+		}
 	}
 	p.HomepageView.Render(w, r, vd)
 }
