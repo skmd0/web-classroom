@@ -36,16 +36,14 @@
 
         <div class="column">
             <div class="box">
-                <h2 class="title">Latest posts</h2>
+                <h2 class="title">Your latest posts</h2>
                 <div class="content">
                     <ul>
-                        <li>Lorem ipsum</li>
-                        <li>Lorem ipsum</li>
-                        <li>Lorem ipsum</li>
-                        <li>Liorem ipsum</li>
-                        <li>Lorem ipsum</li>
+                        {{range .}}
+                            <li><a href="/post/{{.ID}}">{{.Title}}</a></li>
+                        {{end}}
                     </ul>
-                    <p><a href="/posts">Show the list of all posts...</a></p>
+                    <p><a href="/posts" class="button is-info">Show all posts...</a></p>
                 </div>
                 <hr>
                 <div class="content">

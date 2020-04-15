@@ -21,6 +21,7 @@ func NewPosts(ps posts.PostService, r *mux.Router) *Posts {
 		ShowView:      views.NewView("bulma", "posts/show"),
 		EditView:      views.NewView("bulma", "posts/edit"),
 		PostIndexView: views.NewView("bulma", "posts/index"),
+		HomepageView:  views.NewView("bulma", "index"),
 		ps:            ps,
 		r:             r,
 	}
@@ -31,6 +32,7 @@ type Posts struct {
 	ShowView      *views.View
 	EditView      *views.View
 	PostIndexView *views.View
+	HomepageView  *views.View
 	ps            posts.PostService
 	r             *mux.Router
 }
@@ -79,6 +81,18 @@ func (p *Posts) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	http.Redirect(w, r, url.Path, http.StatusFound)
+}
+
+// /GET /
+func (p *Posts) Homepage(w http.ResponseWriter, r *http.Request) {
+	var vd views.Data
+	user := context.User(r.Context())
+
+	postsDB, err := p.ps.ByUserIdWithLimit(user.ID, 10)
+	if err == nil {
+		vd.Yield = postsDB
+	}
+	p.HomepageView.Render(w, r, vd)
 }
 
 // /GET /posts

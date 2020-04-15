@@ -48,7 +48,7 @@ func main() {
 
 	// ROUTING
 	r.NotFoundHandler = staticC.NotFoundHandler()
-	r.Handle("/", applyUserMw.Apply(staticC.Index)).Methods("GET")
+	r.Handle("/", applyUserMw.ApplyFn(postsC.Homepage)).Methods("GET")
 
 	// User
 	r.HandleFunc("/login", applyUserMw.ApplyFn(usersC.Login)).Methods("GET")
