@@ -55,7 +55,6 @@ func main() {
 	r.HandleFunc("/login", applyUserMw.ApplyFn(usersC.LoginUser)).Methods("POST")
 	r.HandleFunc("/signup", applyUserMw.ApplyFn(usersC.New)).Methods("GET")
 	r.HandleFunc("/signup", applyUserMw.ApplyFn(usersC.Create)).Methods("POST")
-	r.HandleFunc("/cookie", applyUserMw.ApplyFn(usersC.CookieTest)).Methods("GET")
 
 	// Posts
 	r.Handle("/post/new", requireUserMw.Apply(postsC.New)).Methods("GET")

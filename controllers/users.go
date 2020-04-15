@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"github.com/jinzhu/gorm"
 	"log"
 	"net/http"
@@ -96,21 +95,6 @@ func (u *Users) signIn(w http.ResponseWriter, user *users.User) error {
 	}
 	http.SetCookie(w, &cookie)
 	return nil
-}
-
-// CookieTest displays email cookie set on the current user
-func (u *Users) CookieTest(w http.ResponseWriter, r *http.Request) {
-	cookie, err := r.Cookie("remember_token")
-	if err != nil {
-		http.Redirect(w, r, "/login", http.StatusFound)
-		return
-	}
-	user, err := u.us.ByRemember(cookie.Value)
-	if err != nil {
-		http.Redirect(w, r, "/login", http.StatusFound)
-		return
-	}
-	fmt.Fprintln(w, user)
 }
 
 // New is used to render the form where a user can
