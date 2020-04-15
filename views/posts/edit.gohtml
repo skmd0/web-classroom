@@ -29,9 +29,16 @@
                 </form>
                 <hr>
                 <h1 class="title">Danger zone</h1>
-                <form action="/post/{{.ID}}/delete" method="POST" class="form-login">
-                    <button class="button is-link is-fullwidth is-danger">Delete</button>
+                <form name="delete-post" action="/post/{{.ID}}/delete" method="POST" class="form-login">
+                    <a class="button is-fullwidth is-danger" id="delete">Delete</a>
                 </form>
+                <script>
+                    document.getElementById("delete").onclick = function () {
+                        if (confirm("Do you really want to delete the post?")) {
+                            document.forms["delete-post"].submit()
+                        }
+                    }
+                </script>
             </div>
         </div>
     </div>
