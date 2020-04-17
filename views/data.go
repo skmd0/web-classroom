@@ -21,11 +21,19 @@ type Alert struct {
 	Message string
 }
 
+type Breadcrumbs struct {
+	// map[title]url
+	Pages map[string]string
+	// LastPageKey is used to apply active-link css class when rendering template
+	LastPageKey string
+}
+
 // Data is a top level wrapper of data that views render
 type Data struct {
-	Alert *Alert
-	User  *users.User
-	Yield interface{}
+	Alert       *Alert
+	Breadcrumbs Breadcrumbs
+	User        *users.User
+	Yield       interface{}
 }
 
 func (d *Data) SetAlert(err error) {

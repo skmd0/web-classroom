@@ -39,12 +39,22 @@
         <div class="container is-fluid"
              style="background-color:#e6fffa;padding:12px 16px;border-top:4px solid #4fd1c5;border-bottom:1px solid #d0d6dd;">
             <div class="container">
-                <ul>
-                    <li><a href="/" style="color:#38b2ac;text-decoration: underline;">Home</a></li>
-                    <li><a href="#" style="color:#38b2ac;text-decoration: underline;">Backend</a></li>
-                    <li><a href="#" style="color:#38b2ac;text-decoration: underline;">Golang</a></li>
-                    <li class="is-active"><a href="#" aria-current="page">Web development with Go</a></li>
-                </ul>
+                {{if .Breadcrumbs.Pages}}
+                    <ul>
+                        {{$lastPageKey := .Breadcrumbs.LastPageKey}}
+                        {{range $title, $url := .Breadcrumbs.Pages}}
+                            <li {{if eq $lastPageKey $title}}class="is-active"{{end}}>
+                                <a href="{{$url}}"
+                                   {{if ne $lastPageKey $title}}style="color:#38b2ac;text-decoration: underline;"{{end}}
+                                >{{$title}}</a>
+                            </li>
+                        {{end}}
+                    </ul>
+                {{else}}
+                    <ul>
+                        <li><a href="/" style="color:#38b2ac;text-decoration: underline;">Home</a></li>
+                    </ul>
+                {{end}}
             </div>
         </div>
     </nav>

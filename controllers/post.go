@@ -137,13 +137,23 @@ func (p *Posts) Show(w http.ResponseWriter, r *http.Request) {
 		// the postByID method already handled the rendering of the error
 		return
 	}
+
+	// generate breadcrumbs for navbar
+	var vd views.Data
+	bc := make(map[string]string)
+	bc["Home"] = "/"
+	bc["Posts"] = "/posts"
+	bc[post.Title] = r.URL.Path
+	vd.Breadcrumbs = views.Breadcrumbs{Pages: bc, LastPageKey: post.Title}
+
+	// generate HTML from markdown
 	parsedContent := strings.ReplaceAll(post.Content, "\n", `
 
 `)
 	md := []byte(parsedContent)
 	html := markdown.ToHTML(md, nil, nil)
 	post.ContentHTML = template.HTML(html)
-	vd := views.Data{Yield: post}
+	vd.Yield = post
 	p.ShowView.Render(w, r, vd)
 }
 
