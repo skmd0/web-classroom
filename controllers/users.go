@@ -123,6 +123,9 @@ type SignUpForm struct {
 func (u *Users) Create(w http.ResponseWriter, r *http.Request) {
 	var vd views.Data
 	var form SignUpForm
+
+	// save form data to reload it if signup fails
+	vd.Yield = &form
 	if err := ParseForm(r, &form); err != nil {
 		log.Println(err)
 		vd.SetAlert(err)
