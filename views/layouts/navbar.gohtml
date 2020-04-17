@@ -42,11 +42,11 @@
                 {{if .Breadcrumbs.Pages}}
                     <ul>
                         {{$lastPageKey := .Breadcrumbs.LastPageKey}}
-                        {{range $title, $url := .Breadcrumbs.Pages}}
-                            <li {{if eq $lastPageKey $title}}class="is-active"{{end}}>
-                                <a href="{{$url}}"
-                                   {{if ne $lastPageKey $title}}style="color:#38b2ac;text-decoration: underline;"{{end}}
-                                >{{$title}}</a>
+                        {{range $page := .Breadcrumbs.Pages}}
+                            <li {{if eq $lastPageKey $page.Title}}class="is-active"{{end}}>
+                                <a href="{{$page.URL}}"
+                                   {{if ne $lastPageKey $page.Title}}style="color:#38b2ac;text-decoration: underline;"{{end}}
+                                >{{$page.Title}}</a>
                             </li>
                         {{end}}
                     </ul>

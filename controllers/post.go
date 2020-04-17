@@ -140,11 +140,24 @@ func (p *Posts) Show(w http.ResponseWriter, r *http.Request) {
 
 	// generate breadcrumbs for navbar
 	var vd views.Data
-	bc := make(map[string]string)
-	bc["Home"] = "/"
-	bc["Posts"] = "/posts"
-	bc[post.Title] = r.URL.Path
-	vd.Breadcrumbs = views.Breadcrumbs{Pages: bc, LastPageKey: post.Title}
+	pages := make([]views.Page, 0)
+	home := views.Page{
+		Title: "Home",
+		URL:   "/",
+	}
+	posts := views.Page{
+		Title: "Posts",
+		URL:   "/posts",
+	}
+	currentPage := views.Page{
+		Title: post.Title,
+		URL:   r.URL.Path,
+	}
+	pages = append(pages, home, posts, currentPage)
+	vd.Breadcrumbs = views.Breadcrumbs{
+		Pages:       pages,
+		LastPageKey: post.Title,
+	}
 
 	// generate HTML from markdown
 	parsedContent := strings.ReplaceAll(post.Content, "\n", `

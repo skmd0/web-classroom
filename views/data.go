@@ -21,9 +21,13 @@ type Alert struct {
 	Message string
 }
 
+type Page struct {
+	Title string
+	URL   string
+}
+
 type Breadcrumbs struct {
-	// map[title]url
-	Pages map[string]string
+	Pages []Page
 	// LastPageKey is used to apply active-link css class when rendering template
 	LastPageKey string
 }
