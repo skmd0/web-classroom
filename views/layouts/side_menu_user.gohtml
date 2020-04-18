@@ -1,0 +1,29 @@
+{{define "side-menu-user"}}
+    <div class="column is-one-quarter">
+        <aside class="menu">
+            <p class="menu-label">
+                Table of contents
+            </p>
+            <ul class="menu-list">
+                <li><a>Team Settings</a></li>
+                <li>
+                    <a>Manage Your Team</a>
+                    <ul>
+                        <li><a>Members</a></li>
+                        <li><a>Plugins</a></li>
+                        <li><a>Add a member</a></li>
+                    </ul>
+                </li>
+                <li><a>Invitations</a></li>
+                <li><a>Cloud Storage Environment Settings</a></li>
+                <li><a>Authentication</a></li>
+            </ul>
+            <p class="menu-label">
+                Options
+            </p>
+            <ul class="menu-list">
+                <li><a href="/post/{{.ID}}/edit">Edit content</a></li>
+            </ul>
+        </aside>
+    </div>
+{{end}}
