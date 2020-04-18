@@ -2,6 +2,7 @@ package util
 
 import (
 	"github.com/jinzhu/gorm"
+	"wiki/models/keywords"
 	"wiki/models/posts"
 	"wiki/models/users"
 )
@@ -12,17 +13,21 @@ func NewServices(connectionInfo string) (*Services, error) {
 		return nil, err
 	}
 	//db.LogMode(true)
+
+	ks := keywords.NewKeywordService(db)
 	return &Services{
-		Post: posts.NewPostService(db),
-		User: users.NewUserService(db),
-		db:   db,
+		Post:    posts.NewPostService(db, ks),
+		User:    users.NewUserService(db),
+		Keyword: ks,
+		db:      db,
 	}, nil
 }
 
 type Services struct {
-	Post posts.PostService
-	User users.UserService
-	db   *gorm.DB
+	Post    posts.PostService
+	User    users.UserService
+	Keyword keywords.KeywordService
+	db      *gorm.DB
 }
 
 // Close closes the database connection.
@@ -32,7 +37,7 @@ func (s *Services) Close() error {
 
 // DestructiveReset drops all tables and rebuilds them
 func (s *Services) DestructiveReset() error {
-	err := s.db.DropTableIfExists(&users.User{}, &posts.Post{}).Error
+	err := s.db.DropTableIfExists(&users.User{}, &posts.Post{}, &keywords.Keyword{}).Error
 	if err != nil {
 		return err
 	}
@@ -41,5 +46,5 @@ func (s *Services) DestructiveReset() error {
 
 // AutoMigrate tries to automatically migrate the DB schema changes
 func (s *Services) AutoMigrate() error {
-	return s.db.AutoMigrate(&users.User{}, &posts.Post{}).Error
+	return s.db.AutoMigrate(&users.User{}, &posts.Post{}, &keywords.Keyword{}).Error
 }
