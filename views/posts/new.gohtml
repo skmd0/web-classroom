@@ -16,22 +16,38 @@
                         </div>
                     </div>
                     <h2 class="title">Keywords</h2>
-                    <div class="columns" style="margin-bottom: 0;">
+                    <p class="buttons">
+                        <a id="add-keyword" class="button is-info">
+                            <span class="icon"> <i class="fas fa-plus"></i> </span> <span>Add keyword</span>
+                        </a>
+                    </p>
+                    <script>
+                        let keywordCount = 1;
+                        document.getElementById("add-keyword").onclick = function () {
+                            console.log("click");
+                            let keywordHTML = `<div id="keyword-` + keywordCount + `" class="columns" style="margin-bottom: 0;">
                         <div class="column field control is-one-fifth" style="padding-bottom:0;">
-                            <input class="input" type="text" name="Keywords.0.Title" placeholder="Keyword" value="">
+                            <input class="input" type="text" name="Keywords.` + keywordCount + `.Title" placeholder="Keyword" value="">
                         </div>
                         <div class="column field control">
-                            <input class="input" type="text" name="Keywords.0.Definition" placeholder="Description..."
+                            <input class="input" type="text" name="Keywords.` + keywordCount + `.Definition" placeholder="Description..."
                                    value="">
                         </div>
-                    </div>
-                    <div class="columns">
-                        <div class="column field control is-one-fifth">
-                            <input class="input" type="text" name="Keywords.1.Title" placeholder="Keyword" value="">
-                        </div>
-                        <div class="column field control">
-                            <input class="input" type="text" name="Keywords.1.Definition" placeholder="Description..."
-                                   value="">
+                    </div>`;
+                            document.getElementById("keywords").innerHTML += keywordHTML;
+                            keywordCount += 1;
+                        }
+                    </script>
+                    <div id="keywords">
+                        <div id="keyword-0" class="columns" style="margin-bottom: 0;">
+                            <div class="column field control is-one-fifth" style="padding-bottom:0;">
+                                <input class="input" type="text" name="Keywords.0.Title" placeholder="Keyword" value="">
+                            </div>
+                            <div class="column field control">
+                                <input class="input" type="text" name="Keywords.0.Definition"
+                                       placeholder="Description..."
+                                       value="">
+                            </div>
                         </div>
                     </div>
                     <h2 class="title">Theory</h2>
