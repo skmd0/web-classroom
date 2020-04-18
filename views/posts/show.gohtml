@@ -28,9 +28,13 @@
                     </ul>
                 </div>
 
-                <h1 class="title">{{.Title}}</h1>
                 <div class="content">
-                    {{.ContentHTML}}
+                    <h1 class="post-section-title">Keywords</h1>
+                    {{range $key := .Keys}}
+                        <p><b>{{$key.Title}}</b> - {{$key.Description}}</p>
+                    {{end}}
+                    <h1 class="post-section-title">Theory</h1>
+                    {{.Post.ContentHTML}}
                 </div>
             </div>
         </div>

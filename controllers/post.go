@@ -11,6 +11,7 @@ import (
 	"strings"
 	"wiki/context"
 	"wiki/models"
+	"wiki/models/keywords"
 	"wiki/models/posts"
 	"wiki/views"
 )
@@ -138,6 +139,8 @@ func (p *Posts) Show(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	keys, err := p.ps.GetKeywords(post.ID)
+
 	// generate breadcrumbs for navbar
 	var vd views.Data
 	pages := make([]views.Page, 0)
@@ -166,7 +169,15 @@ func (p *Posts) Show(w http.ResponseWriter, r *http.Request) {
 	md := []byte(parsedContent)
 	html := markdown.ToHTML(md, nil, nil)
 	post.ContentHTML = template.HTML(html)
-	vd.Yield = post
+
+	content := struct {
+		Post *posts.Post
+		Keys *[]keywords.Keyword
+	}{
+		Post: post,
+		Keys: keys,
+	}
+	vd.Yield = content
 	p.ShowView.Render(w, r, vd)
 }
 
