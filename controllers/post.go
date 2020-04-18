@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"bufio"
 	"fmt"
 	"github.com/gomarkdown/markdown"
 	"github.com/gorilla/mux"
@@ -150,6 +151,12 @@ func (p *Posts) postByID(w http.ResponseWriter, r *http.Request) (*posts.Post, e
 	return post, nil
 }
 
+type Heading struct {
+	Title    string
+	TopLevel bool
+	Anchor   string
+}
+
 // GET /posts/:id
 func (p *Posts) Show(w http.ResponseWriter, r *http.Request) {
 	post, err := p.postByID(w, r)
@@ -189,12 +196,41 @@ func (p *Posts) Show(w http.ResponseWriter, r *http.Request) {
 	html := markdown.ToHTML(md, nil, nil)
 	post.ContentHTML = template.HTML(html)
 
+	// generate side menu table of contents from markdown
+	var headings []Heading
+	scanner := bufio.NewScanner(strings.NewReader(post.Content))
+	for scanner.Scan() {
+		txt := scanner.Text()
+		n := strings.Count(txt, "#")
+		if n == 2 {
+			title := txt[3:]
+			anchor := "#" + strings.ToLower(strings.ReplaceAll(title, " ", "_"))
+			h := Heading{
+				Title:    title,
+				TopLevel: false,
+				Anchor:   anchor,
+			}
+			headings = append(headings, h)
+		} else if n == 1 {
+			title := txt[2:]
+			anchor := "#" + strings.ToLower(strings.ReplaceAll(title, " ", "_"))
+			h := Heading{
+				Title:    title,
+				TopLevel: true,
+				Anchor:   anchor,
+			}
+			headings = append(headings, h)
+		}
+	}
+
 	content := struct {
 		Post *posts.Post
 		Keys *[]keywords.Keyword
+		ToC  *[]Heading
 	}{
 		Post: post,
 		Keys: keys,
+		ToC:  &headings,
 	}
 	vd.Yield = content
 	p.ShowView.Render(w, r, vd)
