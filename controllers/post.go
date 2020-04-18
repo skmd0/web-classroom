@@ -77,6 +77,9 @@ func (p *Posts) Create(w http.ResponseWriter, r *http.Request) {
 
 	var parsedKeywords []keywords.Keyword
 	for _, key := range form.Keywords {
+		if key.Title == "" || key.Definition == "" {
+			continue
+		}
 		key := keywords.Keyword{
 			Title:       key.Title,
 			Description: key.Definition,
