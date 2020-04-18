@@ -3,12 +3,12 @@
         <div class="column">
             <div class="box">
                 <h1 class="title">Edit your post</h1>
-                <form action="/post/{{.ID}}/update" method="POST" class="form-login">
+                <form action="/post/{{.Post.ID}}/update" method="POST" class="form-login">
                     <div class="columns">
                         <div class="column">
                             <div class="field">
                                 <div class="control has-icons-left">
-                                    <input class="input" type="text" name="title" value="{{.Title}}">
+                                    <input class="input" type="text" name="title" value="{{.Post.Title}}">
                                     <span class="icon is-small is-left"> <i class="fas fa-pen"></i> </span>
                                 </div>
                             </div>
@@ -21,15 +21,57 @@
                             </div>
                         </div>
                     </div>
+                    <h2 class="title">Keywords</h2>
+                    <p class="buttons">
+                        <a id="add-keyword" class="button is-info">
+                            <span class="icon"> <i class="fas fa-plus"></i> </span> <span>Add keyword</span>
+                        </a>
+                    </p>
+                    <script>
+                        let keywordCount = {{len .Keys}};
+                        document.getElementById("add-keyword").onclick = function () {
+                            let keywordHTML = `<div id="keyword-` + keywordCount + `" class="columns" style="margin-bottom: 0;">
+                        <div class="column field control is-one-fifth" style="padding-bottom:0;">
+                            <input class="input" type="text" name="Keywords.` + keywordCount + `.Title" placeholder="Keyword" value="">
+                        </div>
+                        <div class="column field control">
+                            <input class="input" type="text" name="Keywords.` + keywordCount + `.Definition" placeholder="Description..."
+                                   value="">
+                        </div>
+                    </div>`;
+
+                            let keywordsWrapper = document.getElementById("keywords");
+                            let e = document.createElement("div");
+                            e.innerHTML = keywordHTML;
+                            keywordsWrapper.appendChild(e);
+                            keywordCount += 1;
+                        }
+                    </script>
+                    <div id="keywords">
+                        {{range $i, $key := .Keys}}
+                            <div id="keyword-{{$i}}" class="columns" style="margin-bottom: 0;">
+                                <input type="hidden" name="Keywords.{{$i}}.ID" value="{{$key.ID}}">
+                                <div class="column field control is-one-fifth" style="padding-bottom:0;">
+                                    <input class="input" type="text" name="Keywords.{{$i}}.Title" placeholder="Keyword"
+                                           value="{{$key.Title}}">
+                                </div>
+                                <div class="column field control">
+                                    <input class="input" type="text" name="Keywords.{{$i}}.Definition"
+                                           placeholder="Description..." value="{{$key.Description}}">
+                                </div>
+                            </div>
+                        {{end}}
+                    </div>
+                    <h2 class="title">Theory</h2>
                     <div class="field">
                         <div class="control">
-                            <textarea class="textarea" name="content" rows="15">{{.Content}}</textarea>
+                            <textarea class="textarea" name="content" rows="15">{{.Post.Content}}</textarea>
                         </div>
                     </div>
                 </form>
                 <hr>
                 <h1 class="title">Danger zone</h1>
-                <form name="delete-post" action="/post/{{.ID}}/delete" method="POST" class="form-login">
+                <form name="delete-post" action="/post/{{.Post.ID}}/delete" method="POST" class="form-login">
                     <a class="button is-fullwidth is-danger" id="delete">Delete</a>
                 </form>
                 <script>

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gomarkdown/markdown"
 	"github.com/gorilla/mux"
+	"github.com/jinzhu/gorm"
 	"html/template"
 	"log"
 	"net/http"
@@ -45,6 +46,7 @@ type NewPostForm struct {
 }
 
 type KeywordForm struct {
+	ID         uint
 	Title      string
 	Definition string
 }
@@ -202,17 +204,29 @@ func (p *Posts) Show(w http.ResponseWriter, r *http.Request) {
 //
 // /GET /post/:id/edit
 func (p *Posts) Edit(w http.ResponseWriter, r *http.Request) {
+	var vd views.Data
+
 	post, err := p.postByID(w, r)
 	if err != nil {
 		// the postByID method already handled the rendering of the error
 		return
 	}
+
+	keys, err := p.ps.GetKeywords(post.ID)
+
 	user := context.User(r.Context())
 	if post.UserID != user.ID {
 		http.Error(w, "Gallery not found", http.StatusNotFound)
 		return
 	}
-	vd := views.Data{Yield: post}
+	content := struct {
+		Post *posts.Post
+		Keys *[]keywords.Keyword
+	}{
+		Post: post,
+		Keys: keys,
+	}
+	vd.Yield = content
 	p.EditView.Render(w, r, vd)
 }
 
@@ -241,7 +255,20 @@ func (p *Posts) Update(w http.ResponseWriter, r *http.Request) {
 	}
 	post.Title = form.Title
 	post.Content = form.Content
-	err = p.ps.Update(post)
+
+	var parsedKeywords []keywords.Keyword
+	for _, key := range form.Keywords {
+		if key.Title == "" || key.Definition == "" {
+			continue
+		}
+		keyDB := keywords.Keyword{
+			Model:       gorm.Model{ID: key.ID},
+			Title:       key.Title,
+			Description: key.Definition,
+		}
+		parsedKeywords = append(parsedKeywords, keyDB)
+	}
+	err = p.ps.UpdatePost(post, &parsedKeywords)
 	if err != nil {
 		log.Println(err)
 		vd.SetAlert(err)
