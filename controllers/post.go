@@ -141,11 +141,11 @@ func (p *Posts) Show(w http.ResponseWriter, r *http.Request) {
 	// generate breadcrumbs for navbar
 	var vd views.Data
 	pages := make([]views.Page, 0)
-	home := views.Page{
+	homeLink := views.Page{
 		Title: "Home",
 		URL:   "/",
 	}
-	posts := views.Page{
+	postsLink := views.Page{
 		Title: "Posts",
 		URL:   "/posts",
 	}
@@ -153,7 +153,7 @@ func (p *Posts) Show(w http.ResponseWriter, r *http.Request) {
 		Title: post.Title,
 		URL:   r.URL.Path,
 	}
-	pages = append(pages, home, posts, currentPage)
+	pages = append(pages, homeLink, postsLink, currentPage)
 	vd.Breadcrumbs = views.Breadcrumbs{
 		Pages:       pages,
 		LastPageKey: post.Title,
