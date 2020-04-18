@@ -39,8 +39,14 @@ type Posts struct {
 }
 
 type NewPostForm struct {
-	Title   string `schema:"title"`
-	Content string `schema:"content"`
+	Title    string `schema:"title"`
+	Content  string `schema:"content"`
+	Keywords []KeywordForm
+}
+
+type KeywordForm struct {
+	Title      string
+	Definition string
 }
 
 // Create is used to process the signup form when a user
@@ -69,7 +75,15 @@ func (p *Posts) Create(w http.ResponseWriter, r *http.Request) {
 		Content: form.Content,
 	}
 
-	err := p.ps.Create(post)
+	var parsedKeywords []keywords.Keyword
+	for _, key := range form.Keywords {
+		key := keywords.Keyword{
+			Title:       key.Title,
+			Description: key.Definition,
+		}
+		parsedKeywords = append(parsedKeywords, key)
+	}
+	err := p.ps.CreatePost(post, &parsedKeywords)
 	if err != nil {
 		vd.SetAlert(err)
 		p.New.Render(w, r, vd)
