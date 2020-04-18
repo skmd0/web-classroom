@@ -24,7 +24,6 @@
                     <script>
                         let keywordCount = 1;
                         document.getElementById("add-keyword").onclick = function () {
-                            console.log("click");
                             let keywordHTML = `<div id="keyword-` + keywordCount + `" class="columns" style="margin-bottom: 0;">
                         <div class="column field control is-one-fifth" style="padding-bottom:0;">
                             <input class="input" type="text" name="Keywords.` + keywordCount + `.Title" placeholder="Keyword" value="">
@@ -34,7 +33,11 @@
                                    value="">
                         </div>
                     </div>`;
-                            document.getElementById("keywords").innerHTML += keywordHTML;
+
+                            let keywordsWrapper = document.getElementById("keywords");
+                            let e = document.createElement("div");
+                            e.innerHTML = keywordHTML;
+                            keywordsWrapper.appendChild(e);
                             keywordCount += 1;
                         }
                     </script>
