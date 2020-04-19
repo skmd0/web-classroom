@@ -2,26 +2,10 @@
     <div class="column is-one-quarter">
         <aside class="menu">
             <p class="menu-label">
-                Table of contents
-            </p>
-            <ul class="menu-list">
-                {{range $item := .ToC}}
-                    {{if $item.TopLevel}}
-                        <li><a href="{{$item.Anchor}}">{{$item.Title}}</a></li>
-                    {{else}}
-                        <li>
-                            <ul>
-                                <li><a href="{{$item.Anchor}}">{{$item.Title}}</a></li>
-                            </ul>
-                        </li>
-                    {{end}}
-                {{end}}
-            </ul>
-            <p class="menu-label">
                 Options
             </p>
             <ul class="menu-list">
-                <li><a href="/post/{{.Post.ID}}/edit">Edit content</a></li>
+                <li><a href="/post/{{.ID}}/edit">Edit content</a></li>
             </ul>
         </aside>
     </div>
