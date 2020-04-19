@@ -3,9 +3,9 @@ package controllers
 import (
 	"bufio"
 	"fmt"
-	"github.com/gomarkdown/markdown"
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
+	"github.com/russross/blackfriday"
 	"html/template"
 	"log"
 	"net/http"
@@ -189,11 +189,9 @@ func (p *Posts) Show(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// generate HTML from markdown
-	parsedContent := strings.ReplaceAll(post.Content, "\n", `
-
-`)
+	parsedContent := strings.ReplaceAll(post.Content, "\n\r", "\n")
 	md := []byte(parsedContent)
-	html := markdown.ToHTML(md, nil, nil)
+	html := blackfriday.Run(md)
 	post.ContentHTML = template.HTML(html)
 
 	// generate side menu table of contents from markdown
