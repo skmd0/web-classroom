@@ -25,6 +25,7 @@ func NewPosts(ps posts.PostService, r *mux.Router) *Posts {
 		EditView:      views.NewView("bulma", "posts/edit"),
 		PostIndexView: views.NewView("bulma", "posts/index"),
 		HomepageView:  views.NewView("bulma", "index"),
+		ExerciseView:  views.NewView("bulma", "exercises/show"),
 		ps:            ps,
 		r:             r,
 	}
@@ -36,6 +37,7 @@ type Posts struct {
 	EditView      *views.View
 	PostIndexView *views.View
 	HomepageView  *views.View
+	ExerciseView  *views.View
 	ps            posts.PostService
 	r             *mux.Router
 }

@@ -66,7 +66,7 @@ func main() {
 	r.HandleFunc("/post/{id:[0-9]+}/edit", requireUserMw.ApplyFn(postsC.Edit)).Methods("GET")
 	r.HandleFunc("/post/{id:[0-9]+}/update", requireUserMw.ApplyFn(postsC.Update)).Methods("POST")
 	r.HandleFunc("/post/{id:[0-9]+}/delete", requireUserMw.ApplyFn(postsC.Delete)).Methods("POST")
-
+	r.HandleFunc("/post/{id:[0-9]+}/exercise", requireUserMw.ApplyFn(postsC.Exercise)).Methods("GET")
 	fmt.Println("Running the server on :3000")
 	http.ListenAndServe(":3000", r)
 }
