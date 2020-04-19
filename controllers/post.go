@@ -199,25 +199,27 @@ func (p *Posts) Show(w http.ResponseWriter, r *http.Request) {
 	scanner := bufio.NewScanner(strings.NewReader(post.Content))
 	for scanner.Scan() {
 		txt := scanner.Text()
-		n := strings.Count(txt, "#")
-		if n == 2 {
-			title := txt[3:]
-			anchor := "#" + strings.ToLower(strings.ReplaceAll(title, " ", "_"))
-			h := Heading{
-				Title:    title,
-				TopLevel: false,
-				Anchor:   anchor,
+		if len(txt) > 1 && txt[0] == '#' {
+			n := strings.Count(txt, "#")
+			if n == 2 {
+				title := txt[3:]
+				anchor := "#" + strings.ToLower(strings.ReplaceAll(title, " ", "_"))
+				h := Heading{
+					Title:    title,
+					TopLevel: false,
+					Anchor:   anchor,
+				}
+				headings = append(headings, h)
+			} else if n == 1 {
+				title := txt[2:]
+				anchor := "#" + strings.ToLower(strings.ReplaceAll(title, " ", "_"))
+				h := Heading{
+					Title:    title,
+					TopLevel: true,
+					Anchor:   anchor,
+				}
+				headings = append(headings, h)
 			}
-			headings = append(headings, h)
-		} else if n == 1 {
-			title := txt[2:]
-			anchor := "#" + strings.ToLower(strings.ReplaceAll(title, " ", "_"))
-			h := Heading{
-				Title:    title,
-				TopLevel: true,
-				Anchor:   anchor,
-			}
-			headings = append(headings, h)
 		}
 	}
 
