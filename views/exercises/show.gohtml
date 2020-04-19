@@ -1,0 +1,68 @@
+{{define "yield"}}
+    <div class="columns">
+        {{template "side-menu" .}}
+        <div class="column">
+            <div class="box">
+                <h1 style="text-align: center;border-bottom: none;margin-bottom: 25px; font-size: 38px; font-weight:bold;color:#333 !important;">
+                    Exercise</h1>
+
+                <div class="tabs is-centered is-toggle">
+                    <ul>
+                        <li>
+                            <a href="/post/{{.ID}}">
+                                <span class="icon is-small"><i class="fas fa-file-alt" aria-hidden="true"></i></span>
+                                <span>Theory</span>
+                            </a>
+                        </li>
+                        <li class="is-active">
+                            <a>
+                                <span class="icon is-small"><i class="fas fa-pencil-alt" aria-hidden="true"></i></span>
+                                <span>Exercises</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a>
+                                <span class="icon is-small"><i class="fas fa-link" aria-hidden="true"></i></span>
+                                <span>Sources</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="content">
+                    <h2 class="exercise-title">What does URL stand for?</h2>
+                    <div id="exercise-answer" class="exercise-box" style="">answer hidden</div>
+                    <div id="exercise-controls" class="columns" style="margin-bottom:0;">
+                        <div id="exercise-spacebar" class="column">
+                            <a href="#" class="button is-info is-fullwidth" onclick="swapExerciseControls();">Show
+                                answer
+                                (spacebar)</a>
+                        </div>
+                    </div>
+                    <script>
+                        function swapExerciseControls() {
+                            document.getElementById("exercise-controls").innerHTML = `
+                        <div class="column"><a href="#" class="button is-danger is-fullwidth">Bad</a></div>
+                        <div class="column"><a href="#" class="button is-warning is-fullwidth">Okay</a></div>
+                        <div class="column"><a href="#" class="button is-success is-fullwidth">Good</a></div>
+                            `;
+                            showAnswer();
+                        }
+
+                        function showAnswer() {
+                            document.getElementById("exercise-answer").innerText = "Uniform Resource Locator";
+                        }
+
+                        document.onkeydown = function (e) {
+                            switch (e.keyCode) {
+                                case 32:
+                                    swapExerciseControls();
+                                    break;
+                            }
+                        };
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+{{end}}
