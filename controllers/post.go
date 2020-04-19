@@ -297,6 +297,20 @@ func (p *Posts) Delete(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/posts", http.StatusFound)
 }
 
+// /GET /post/:id/exercise
+func (p *Posts) Exercise(w http.ResponseWriter, r *http.Request) {
+	post, err := p.postByID(w, r)
+	if err != nil {
+		// the postByID method already handled the rendering of the error
+		return
+	}
+
+	var vd views.Data
+	vd.Breadcrumbs = breadcrumbs(post.Title, r.URL.Path)
+	vd.Yield = post
+	p.ExerciseView.Render(w, r, vd)
+}
+
 func headings(content string) *[]Heading {
 	var headings []Heading
 	scanner := bufio.NewScanner(strings.NewReader(content))
