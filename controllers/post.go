@@ -167,72 +167,18 @@ func (p *Posts) Show(w http.ResponseWriter, r *http.Request) {
 
 	keys, err := p.ps.GetKeywords(post.ID)
 
-	// generate breadcrumbs for navbar
 	var vd views.Data
-	pages := make([]views.Page, 0)
-	homeLink := views.Page{
-		Title: "Home",
-		URL:   "/",
-	}
-	postsLink := views.Page{
-		Title: "Posts",
-		URL:   "/posts",
-	}
-	currentPage := views.Page{
-		Title: post.Title,
-		URL:   r.URL.Path,
-	}
-	pages = append(pages, homeLink, postsLink, currentPage)
-	vd.Breadcrumbs = views.Breadcrumbs{
-		Pages:       pages,
-		LastPageKey: post.Title,
-	}
-
-	// generate HTML from markdown
-	parsedContent := strings.ReplaceAll(post.Content, "\n\r", "\n")
-	md := []byte(parsedContent)
-	html := blackfriday.Run(md)
-	post.ContentHTML = template.HTML(html)
-
-	// generate side menu table of contents from markdown
-	var headings []Heading
-	scanner := bufio.NewScanner(strings.NewReader(post.Content))
-	for scanner.Scan() {
-		txt := scanner.Text()
-		if len(txt) > 1 && txt[0] == '#' {
-			n := strings.Count(txt, "#")
-			if n == 2 {
-				title := txt[3:]
-				anchor := "#" + strings.ToLower(strings.ReplaceAll(title, " ", "_"))
-				h := Heading{
-					Title:    title,
-					TopLevel: false,
-					Anchor:   anchor,
-				}
-				headings = append(headings, h)
-			} else if n == 1 {
-				title := txt[2:]
-				anchor := "#" + strings.ToLower(strings.ReplaceAll(title, " ", "_"))
-				h := Heading{
-					Title:    title,
-					TopLevel: true,
-					Anchor:   anchor,
-				}
-				headings = append(headings, h)
-			}
-		}
-	}
-
-	content := struct {
+	vd.Breadcrumbs = breadcrumbs(post.Title, r.URL.Path)
+	post.ContentHTML = markdownToHTML(post.Content)
+	vd.Yield = struct {
 		Post *posts.Post
 		Keys *[]keywords.Keyword
 		ToC  *[]Heading
 	}{
 		Post: post,
 		Keys: keys,
-		ToC:  &headings,
+		ToC:  headings(post.Content),
 	}
-	vd.Yield = content
 	p.ShowView.Render(w, r, vd)
 }
 
@@ -347,4 +293,63 @@ func (p *Posts) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	http.Redirect(w, r, "/posts", http.StatusFound)
+}
+
+func headings(content string) *[]Heading {
+	var headings []Heading
+	scanner := bufio.NewScanner(strings.NewReader(content))
+	for scanner.Scan() {
+		txt := scanner.Text()
+		if len(txt) > 1 && txt[0] == '#' {
+			n := strings.Count(txt, "#")
+			if n == 2 {
+				title := txt[3:]
+				anchor := "#" + strings.ToLower(strings.ReplaceAll(title, " ", "_"))
+				h := Heading{
+					Title:    title,
+					TopLevel: false,
+					Anchor:   anchor,
+				}
+				headings = append(headings, h)
+			} else if n == 1 {
+				title := txt[2:]
+				anchor := "#" + strings.ToLower(strings.ReplaceAll(title, " ", "_"))
+				h := Heading{
+					Title:    title,
+					TopLevel: true,
+					Anchor:   anchor,
+				}
+				headings = append(headings, h)
+			}
+		}
+	}
+	return &headings
+}
+
+func markdownToHTML(content string) template.HTML {
+	parsedContent := strings.ReplaceAll(content, "\n\r", "\n")
+	md := []byte(parsedContent)
+	html := blackfriday.Run(md)
+	return template.HTML(html)
+}
+
+func breadcrumbs(title, path string) views.Breadcrumbs {
+	pages := make([]views.Page, 0)
+	homeLink := views.Page{
+		Title: "Home",
+		URL:   "/",
+	}
+	postsLink := views.Page{
+		Title: "Posts",
+		URL:   "/posts",
+	}
+	currentPage := views.Page{
+		Title: title,
+		URL:   path,
+	}
+	pages = append(pages, homeLink, postsLink, currentPage)
+	return views.Breadcrumbs{
+		Pages:       pages,
+		LastPageKey: title,
+	}
 }
